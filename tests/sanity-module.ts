@@ -4,9 +4,8 @@ import { RunOptions } from '../types'
 export async function test(options: RunOptions) {
 	await runInRepo({
 		...options,
-		repo: 'rakkasjs/rakkasjs',
-		branch: 'main',
-		build: 'build',
-		test: 'vite-ecosystem-ci',
+		repo: 'nuxt-modules/sanity',
+		build: ['dev:prepare', 'build'],
+		test: ['test'],
 	})
 }

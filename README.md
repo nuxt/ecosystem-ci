@@ -1,6 +1,6 @@
-# vite-ecosystem-ci
+# nuxt-ecosystem-ci
 
-This repository is used to run integration tests for vite ecosystem projects
+This repository is used to run integration tests for Nuxt ecosystem projects
 
 ## via github workflow
 
@@ -23,8 +23,8 @@ Workflows are sheduled to run automatically every Monday, Wednesday and Friday
 - or `pnpm test <suitename>` to select a suite
 - or `tsx ecosystem-ci.ts`
 
-You can pass `--tag v2.8.0-beta.1`, `--branch somebranch` or `--commit abcd1234` option to select a specific vite version to build.
-If you pass `--release 2.7.13`, vite build will be skipped and vite is fetched from the registry instead
+You can pass `--tag v3.4.0-beta.1`, `--branch somebranch` or `--commit abcd1234` option to select a specific nuxt version to build.
+If you pass `--release 3.4.1`, Nuxt build will be skipped and Nuxt is fetched from the registry instead
 
 The repositories are checked out into `workspace` subdirectory as shallow clones
 
@@ -39,7 +39,7 @@ The repositories are checked out into `workspace` subdirectory as shallow clones
 
 ## Discord
 
-Results are posted automatically to `#ecosystem-ci` on [vite discord](https://chat.vitejs.dev/)
+Results are posted automatically to `#ecosystem-ci` on [Nuxt discord](https://discord.nuxtjs.org/)
 
 ### on your own server
 

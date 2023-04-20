@@ -1,5 +1,5 @@
-# integration tests for vite ecosystem - single run of selected testsuite
-name: vite-ecosystem-ci-selected
+# integration tests for nuxt ecosystem - single run of selected testsuite
+name: nuxt-ecosystem-ci-selected
 
 env:
   # 7 GiB by default on GitHub, setting to 6 GiB
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       refType:
-        description: "type of vite ref to use"
+        description: "type of nuxt ref to use"
         required: true
         type: choice
         options:
@@ -20,42 +20,22 @@ on:
           - release
         default: "branch"
       ref:
-        description: "vite ref to use"
+        description: "nuxt ref to use"
         required: true
         type: string
         default: "main"
       repo:
-        description: "vite repository to use"
+        description: "nuxt repository to use"
         required: true
         type: string
-        default: "vitejs/vite"
+        default: "nuxt/nuxt"
       suite:
         description: "testsuite to run"
         required: true
         type: choice
         options:
-          - astro
-          - histoire
-          - iles
-          - ladle
-          - laravel
-          - marko
-          - nuxt
-          - previewjs
-          - qwik
-          - rakkas
-          #          - storybook  # disabled until test is updated, see https://github.com/vitejs/vite-ecosystem-ci/issues/130
-          - sveltekit
-          - vite-plugin-ssr
-          - vite-plugin-react
-          - vite-plugin-react-pages
-          - vite-plugin-react-swc
-          - vite-plugin-svelte
-          - vite-plugin-vue
-          - vite-setup-catalogue
-          - vitepress
-          - vitest
-          - windicss
+          - starter
+          - sanity-module
 jobs:
   execute-selected-suite:
     timeout-minutes: 30
@@ -66,11 +46,6 @@ jobs:
         with:
           node-version: 18
         id: setup-node
-      - uses: denoland/setup-deno@v1
-        with:
-          deno-version: v1.x
-        id: setup-deno
-        continue-on-error: true
       - run: corepack enable
       - run: pnpm --version
       - run: pnpm i --frozen-lockfile

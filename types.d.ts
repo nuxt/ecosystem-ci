@@ -3,7 +3,7 @@ import type { Agent } from '@antfu/ni'
 export interface EnvironmentData {
 	root: string
 	workspace: string
-	vitePath: string
+	nuxtPath: string
 	cwd: string
 	env: ProcessEnv
 }
@@ -11,8 +11,8 @@ export interface EnvironmentData {
 export interface RunOptions {
 	workspace: string
 	root: string
-	vitePath: string
-	viteMajor: number
+	nuxtPath: string
+	nuxtMajor: number
 	verify?: boolean
 	skipGit?: boolean
 	release?: string

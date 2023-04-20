@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { fileURLToPath } from 'url'
 import { execaCommand } from 'execa'
 import {
 	EnvironmentData,
@@ -18,7 +18,7 @@ import * as semver from 'semver'
 
 const isGitHubActions = !!process.env.GITHUB_ACTIONS
 
-let vitePath: string
+let nuxtPath: string
 let cwd: string
 let env: ProcessEnv
 
@@ -60,7 +60,7 @@ export async function setupEnvironment(): Promise<EnvironmentData> {
 	// @ts-expect-error import.meta
 	const root = dirnameFrom(import.meta.url)
 	const workspace = path.resolve(root, 'workspace')
-	vitePath = path.resolve(workspace, 'vite')
+	nuxtPath = path.resolve(workspace, 'nuxt')
 	cwd = process.cwd()
 	env = {
 		...process.env,
@@ -71,7 +71,7 @@ export async function setupEnvironment(): Promise<EnvironmentData> {
 		ECOSYSTEM_CI: 'true', // flag for tests, can be used to conditionally skip irrelevant tests.
 	}
 	initWorkspace(workspace)
-	return { root, workspace, vitePath, cwd, env }
+	return { root, workspace, nuxtPath: nuxtPath, cwd, env }
 }
 
 function initWorkspace(workspace: string) {
@@ -243,46 +243,25 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		await beforeTestCommand?.(pkg.scripts)
 		await testCommand?.(pkg.scripts)
 	}
-	let overrides = options.overrides || {}
+	const overrides = options.overrides || {}
 	if (options.release) {
-		if (overrides.vite && overrides.vite !== options.release) {
+		if (overrides.nuxt && overrides.nuxt !== options.release) {
 			throw new Error(
-				`conflicting overrides.vite=${overrides.vite} and --release=${options.release} config. Use either one or the other`,
+				`conflicting overrides.nuxt=${overrides.nuxt} and --release=${options.release} config. Use either one or the other`,
 			)
 		} else {
-			overrides.vite = options.release
+			overrides.nuxt = options.release
 		}
 	} else {
-		overrides.vite ||= `${options.vitePath}/packages/vite`
-
+		overrides.nuxt ||= `${options.nuxtPath}/packages/nuxt`
+		overrides.nuxi ||= `${options.nuxtPath}/packages/nuxi`
+		overrides['@nuxt/kit'] ||= `${options.nuxtPath}/packages/kit`
+		overrides['@nuxt/schema'] ||= `${options.nuxtPath}/packages/schema`
+		overrides['@nuxt/test-utils'] ||= `${options.nuxtPath}/packages/test-utils`
+		overrides['@nuxt/vite-builder'] ||= `${options.nuxtPath}/packages/vite`
 		overrides[
-			`@vitejs/plugin-legacy`
-		] ||= `${options.vitePath}/packages/plugin-legacy`
-		if (options.viteMajor < 4) {
-			overrides[
-				`@vitejs/plugin-vue`
-			] ||= `${options.vitePath}/packages/plugin-vue`
-			overrides[
-				`@vitejs/plugin-vue-jsx`
-			] ||= `${options.vitePath}/packages/plugin-vue-jsx`
-			overrides[
-				`@vitejs/plugin-react`
-			] ||= `${options.vitePath}/packages/plugin-react`
-			// vite-3 dependency setup could have caused problems if we don't synchronize node versions
-			// vite-4 uses an optional peerDependency instead so keep project types
-			const typesNodePath = fs.realpathSync(
-				`${options.vitePath}/node_modules/@types/node`,
-			)
-			overrides[`@types/node`] ||= `${typesNodePath}`
-		} else {
-			// starting with vite-4, we apply automatic overrides
-			const localOverrides = await buildOverrides(pkg, options, overrides)
-			cd(dir) // buildOverrides changed dir, change it back
-			overrides = {
-				...overrides,
-				...localOverrides,
-			}
-		}
+			'@nuxt/webpack-builder'
+		] ||= `${options.nuxtPath}/packages/webpack`
 	}
 	await applyPackageOverrides(dir, pkg, overrides)
 	await beforeBuildCommand?.(pkg.scripts)
@@ -294,26 +273,26 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 	return { dir }
 }
 
-export async function setupViteRepo(options: Partial<RepoOptions>) {
-	const repo = options.repo || 'vitejs/vite'
+export async function setupNuxtRepo(options: Partial<RepoOptions>) {
+	const repo = options.repo || 'nuxt/nuxt'
 	await setupRepo({
 		repo,
-		dir: vitePath,
+		dir: nuxtPath,
 		branch: 'main',
 		shallow: true,
 		...options,
 	})
 
 	try {
-		const rootPackageJsonFile = path.join(vitePath, 'package.json')
+		const rootPackageJsonFile = path.join(nuxtPath, 'package.json')
 		const rootPackageJson = JSON.parse(
 			await fs.promises.readFile(rootPackageJsonFile, 'utf-8'),
 		)
-		const viteMonoRepoNames = ['@vitejs/vite-monorepo', 'vite-monorepo']
+		const nuxtMonoRepoNames = ['nuxt-framework']
 		const { name } = rootPackageJson
-		if (!viteMonoRepoNames.includes(name)) {
+		if (!nuxtMonoRepoNames.includes(name)) {
 			throw new Error(
-				`expected  "name" field of ${repo}/package.json to indicate vite monorepo, but got ${name}.`,
+				`expected  "name" field of ${repo}/package.json to indicate nuxt monorepo, but got ${name}.`,
 			)
 		}
 		const needsWrite = await overridePackageManagerVersion(
@@ -331,12 +310,12 @@ export async function setupViteRepo(options: Partial<RepoOptions>) {
 			}
 		}
 	} catch (e) {
-		throw new Error(`Failed to setup vite repo`, { cause: e })
+		throw new Error(`Failed to setup nuxt repo`, { cause: e })
 	}
 }
 
 export async function getPermanentRef() {
-	cd(vitePath)
+	cd(nuxtPath)
 	try {
 		const ref = await $`git log -1 --pretty=format:%h`
 		return ref
@@ -346,8 +325,8 @@ export async function getPermanentRef() {
 	}
 }
 
-export async function buildVite({ verify = false }) {
-	cd(vitePath)
+export async function buildNuxt({ verify = false }) {
+	cd(nuxtPath)
 	const frozenInstall = getCommand('pnpm', 'frozen')
 	const runBuild = getCommand('pnpm', 'run', ['build'])
 	const runTest = getCommand('pnpm', 'run', ['build'])
@@ -358,16 +337,16 @@ export async function buildVite({ verify = false }) {
 	}
 }
 
-export async function bisectVite(
+export async function bisectNuxt(
 	good: string,
 	runSuite: () => Promise<Error | void>,
 ) {
-	// sometimes vite build modifies files in git, e.g. LICENSE.md
+	// sometimes nuxt build modifies files in git, e.g. LICENSE.md
 	// this would stop bisect, so to reset those changes
 	const resetChanges = async () => $`git reset --hard HEAD`
 
 	try {
-		cd(vitePath)
+		cd(nuxtPath)
 		await resetChanges()
 		await $`git bisect start`
 		await $`git bisect bad`
@@ -381,7 +360,7 @@ export async function bisectVite(
 				continue // see if next commit can be skipped too
 			}
 			const error = await runSuite()
-			cd(vitePath)
+			cd(nuxtPath)
 			await resetChanges()
 			const bisectOut = await $`git bisect ${error ? 'bad' : 'good'}`
 			bisecting = bisectOut.substring(0, 10).toLowerCase() === 'bisecting:' // as long as git prints 'bisecting: ' there are more revisions to test
@@ -390,7 +369,7 @@ export async function bisectVite(
 		console.log('error while bisecting', e)
 	} finally {
 		try {
-			cd(vitePath)
+			cd(nuxtPath)
 			await $`git bisect reset`
 		} catch (e) {
 			console.log('Error while resetting bisect', e)
@@ -489,7 +468,8 @@ export async function applyPackageOverrides(
 		}
 		pkg.devDependencies = {
 			...pkg.devDependencies,
-			...overrides, // overrides must be present in devDependencies or dependencies otherwise they may not work
+			// TODO
+			// ...overrides, // overrides must be present in devDependencies or dependencies otherwise they may not work
 		}
 		if (!pkg.pnpm) {
 			pkg.pnpm = {}
@@ -537,9 +517,9 @@ export function dirnameFrom(url: string) {
 	return path.dirname(fileURLToPath(url))
 }
 
-export function parseViteMajor(vitePath: string): number {
+export function parseNuxtMajor(nuxtPath: string): number {
 	const content = fs.readFileSync(
-		path.join(vitePath, 'packages', 'vite', 'package.json'),
+		path.join(nuxtPath, 'packages', 'nuxt', 'package.json'),
 		'utf-8',
 	)
 	const pkg = JSON.parse(content)
@@ -548,52 +528,4 @@ export function parseViteMajor(vitePath: string): number {
 
 export function parseMajorVersion(version: string) {
 	return parseInt(version.split('.', 1)[0], 10)
-}
-
-async function buildOverrides(
-	pkg: any,
-	options: RunOptions,
-	repoOverrides: Overrides,
-) {
-	const { root } = options
-	const buildsPath = path.join(root, 'builds')
-	const buildFiles: string[] = fs
-		.readdirSync(buildsPath)
-		.filter((f: string) => !f.startsWith('_') && f.endsWith('.ts'))
-		.map((f) => path.join(buildsPath, f))
-	const buildDefinitions: {
-		packages: { [key: string]: string }
-		build: (options: RunOptions) => Promise<{ dir: string }>
-		dir?: string
-	}[] = await Promise.all(buildFiles.map((f) => import(pathToFileURL(f).href)))
-	const deps = new Set([
-		...Object.keys(pkg.dependencies ?? {}),
-		...Object.keys(pkg.devDependencies ?? {}),
-		...Object.keys(pkg.peerDependencies ?? {}),
-	])
-
-	const needsOverride = (p: string) =>
-		repoOverrides[p] === true || (deps.has(p) && repoOverrides[p] == null)
-	const buildsToRun = buildDefinitions.filter(({ packages }) =>
-		Object.keys(packages).some(needsOverride),
-	)
-	const overrides: Overrides = {}
-	for (const buildDef of buildsToRun) {
-		const { dir } = await buildDef.build({
-			root: options.root,
-			workspace: options.workspace,
-			vitePath: options.vitePath,
-			viteMajor: options.viteMajor,
-			skipGit: options.skipGit,
-			release: options.release,
-			verify: options.verify,
-			// do not pass along scripts
-		})
-		for (const [name, path] of Object.entries(buildDef.packages)) {
-			if (needsOverride(name)) {
-				overrides[name] = `${dir}/${path}`
-			}
-		}
-	}
-	return overrides
 }
