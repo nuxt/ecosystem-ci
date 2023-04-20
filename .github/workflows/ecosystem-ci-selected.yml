@@ -35,6 +35,8 @@ on:
         type: choice
         options:
           - starter
+          - content
+          - image
           - sanity-module
 jobs:
   execute-selected-suite:

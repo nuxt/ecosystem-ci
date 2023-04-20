@@ -30,6 +30,8 @@ on:
         options:
           - "-"
           - starter
+          - content
+          - image
           - sanity-module
 jobs:
   init:
@@ -89,6 +91,8 @@ jobs:
       matrix:
         suite:
           - starter
+          - content
+          - image
           - sanity-module
       fail-fast: false
     steps:
