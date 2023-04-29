@@ -43,6 +43,7 @@ jobs:
           - starter
           - content
           - image
+          - nuxt-vitest
           - sanity-module
       fail-fast: false
     steps:

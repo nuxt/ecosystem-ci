@@ -32,6 +32,7 @@ on:
           - starter
           - content
           - image
+          - nuxt-vitest
           - sanity-module
 jobs:
   init:
@@ -93,6 +94,7 @@ jobs:
           - starter
           - content
           - image
+          - nuxt-vitest
           - sanity-module
       fail-fast: false
     steps:
