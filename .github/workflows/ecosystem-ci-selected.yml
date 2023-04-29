@@ -38,6 +38,7 @@ on:
           - content
           - image
           - nuxt-vitest
+          - devtools
           - sanity-module
 jobs:
   execute-selected-suite:

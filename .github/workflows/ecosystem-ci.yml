@@ -44,6 +44,7 @@ jobs:
           - content
           - image
           - nuxt-vitest
+          - devtools
           - sanity-module
       fail-fast: false
     steps:
