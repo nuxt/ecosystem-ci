@@ -33,6 +33,7 @@ on:
           - content
           - image
           - nuxt-vitest
+          - elk
           - devtools
           - sanity-module
 jobs:
@@ -96,6 +97,7 @@ jobs:
           - content
           - image
           - nuxt-vitest
+          - elk
           - devtools
           - sanity-module
       fail-fast: false
