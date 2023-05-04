@@ -43,6 +43,7 @@ jobs:
           - starter
           - content
           - image
+          - examples
           - bridge
           - nuxt-vitest
           - elk
