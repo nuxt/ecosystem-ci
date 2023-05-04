@@ -43,6 +43,7 @@ jobs:
           - starter
           - content
           - image
+          - pinia
           - examples
           - bridge
           - nuxt-vitest
