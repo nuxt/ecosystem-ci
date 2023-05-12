@@ -262,6 +262,29 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		overrides[
 			'@nuxt/webpack-builder'
 		] ||= `${options.nuxtPath}/packages/webpack`
+
+		const { resolutions } = JSON.parse(
+			await fs.promises.readFile(
+				path.join(options.nuxtPath, 'package.json'),
+				'utf-8',
+			),
+		)
+		const vueResolution = resolutions?.vue || overrides.vue
+		if (vueResolution) {
+			overrides['vue'] ||= vueResolution
+			if (vueResolution.match(/^[~^]?3/)) {
+				overrides['@vue/compiler-ssr'] ||= vueResolution
+				overrides['@vue/runtime-dom'] ||= vueResolution
+				overrides['@vue/server-renderer'] ||= vueResolution
+				overrides['@vue/compiler-core'] ||= vueResolution
+				overrides['@vue/reactivity'] ||= vueResolution
+				overrides['@vue/shared'] ||= vueResolution
+				overrides['@vue/compiler-dom'] ||= vueResolution
+				overrides['@vue/reactivity-transform'] ||= vueResolution
+				overrides['@vue/compiler-sfc'] ||= vueResolution
+				overrides['@vue/runtime-core'] ||= vueResolution
+			}
+		}
 	}
 	await applyPackageOverrides(dir, pkg, overrides)
 	await beforeBuildCommand?.(pkg.scripts)

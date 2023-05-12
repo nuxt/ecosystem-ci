@@ -14,6 +14,7 @@ export async function test(options: RunOptions) {
 		],
 		overrides: {
 			nuxt: '^2.16.3',
+			vue: '^2.7.14',
 		},
 	})
 }
