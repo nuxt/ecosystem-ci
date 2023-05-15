@@ -47,6 +47,7 @@ jobs:
           - examples
           - bridge
           - nuxt-vitest
+          - vite-pwa
           - elk
           - devtools
           - sanity-module
