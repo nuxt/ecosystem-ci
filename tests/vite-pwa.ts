@@ -6,7 +6,7 @@ export async function test(options: RunOptions) {
 		...options,
 		repo: 'vite-pwa/nuxt',
 		branch: 'main',
-		beforeTest: 'pnpm playwright install',
+		beforeTest: 'pnpm playwright install chromium',
 		build: ['dev:prepare', 'prepack'],
 		test: 'test',
 	})
