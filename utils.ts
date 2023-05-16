@@ -272,7 +272,8 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		const vueResolution = resolutions?.vue || overrides.vue
 		if (vueResolution) {
 			overrides['vue'] ||= vueResolution
-			if (vueResolution.match(/^[~^]?3/)) {
+			overrides['@vue/compiler-sfc'] ||= vueResolution
+			if (vueResolution.match(/^[\~\^]?3/)) {
 				overrides['@vue/compiler-ssr'] ||= vueResolution
 				overrides['@vue/runtime-dom'] ||= vueResolution
 				overrides['@vue/server-renderer'] ||= vueResolution
@@ -281,7 +282,6 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 				overrides['@vue/shared'] ||= vueResolution
 				overrides['@vue/compiler-dom'] ||= vueResolution
 				overrides['@vue/reactivity-transform'] ||= vueResolution
-				overrides['@vue/compiler-sfc'] ||= vueResolution
 				overrides['@vue/runtime-core'] ||= vueResolution
 			}
 		}
