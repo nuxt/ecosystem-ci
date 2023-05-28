@@ -6,6 +6,6 @@ export async function test(options: RunOptions) {
 		...options,
 		repo: 'nuxt/image',
 		build: ['dev:prepare', 'build'],
-		test: ['dev:build'],
+		test: ['test', 'test:types'],
 	})
 }
