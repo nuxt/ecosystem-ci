@@ -39,6 +39,7 @@ on:
           - vite-pwa
           - elk
           - devtools
+          - module-builder
           - sanity-module
 jobs:
   init:
@@ -107,6 +108,7 @@ jobs:
           - vite-pwa
           - elk
           - devtools
+          - module-builder
           - sanity-module
       fail-fast: false
     steps:
