@@ -46,6 +46,7 @@ on:
           - devtools
           - module-builder
           - sanity-module
+          - i18n-module
 jobs:
   execute-selected-suite:
     timeout-minutes: 30

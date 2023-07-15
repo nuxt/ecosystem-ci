@@ -52,6 +52,7 @@ jobs:
           - devtools
           - module-builder
           - sanity-module
+          - i18n-module
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
