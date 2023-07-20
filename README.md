@@ -33,7 +33,7 @@ The repositories are checked out into `workspace` subdirectory as shallow clones
 - comment `/ecosystem-ci run` on a PR
 - or `/ecosystem-ci run <suitename>` to select a suite
 
-Users with triage permission to vitejs/vite repository can only use this.
+Users with triage permission to nuxt/nuxt repository can only use this.
 
 See [docs/pr-comment-setup.md](./docs/pr-comment-setup.md) for how to setup this feature.
 
