@@ -43,6 +43,7 @@ on:
           - nuxt-vitest
           - vite-pwa
           - docus
+          - og-image
           - elk
           - devtools
           - module-builder
