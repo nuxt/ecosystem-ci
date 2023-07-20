@@ -42,6 +42,7 @@ on:
           - bridge
           - nuxt-vitest
           - vite-pwa
+          - docus
           - elk
           - devtools
           - module-builder
