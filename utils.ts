@@ -192,6 +192,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		branch,
 		tag,
 		commit,
+		shallow,
 		skipGit,
 		verify,
 		beforeInstall,
@@ -205,7 +206,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 	)
 
 	if (!skipGit) {
-		await setupRepo({ repo, dir, branch, tag, commit })
+		await setupRepo({ repo, dir, branch, tag, commit, shallow })
 	} else {
 		cd(dir)
 	}

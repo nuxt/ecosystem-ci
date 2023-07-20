@@ -41,6 +41,7 @@ on:
           - devtools
           - module-builder
           - sanity-module
+          - i18n-module
 jobs:
   init:
     runs-on: ubuntu-latest
@@ -110,6 +111,7 @@ jobs:
           - devtools
           - module-builder
           - sanity-module
+          - i18n-module
       fail-fast: false
     steps:
       - uses: actions/checkout@v3
