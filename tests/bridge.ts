@@ -13,7 +13,7 @@ export async function test(options: RunOptions) {
 			'test:fixtures:webpack:dev',
 		],
 		overrides: {
-			nuxt: '^2.16.3',
+			nuxt: '^2.17.1',
 			vue: '^2.7.14',
 			'@vue/compiler-sfc': '^2.7.14',
 		},
