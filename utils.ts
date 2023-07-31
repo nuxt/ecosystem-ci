@@ -12,6 +12,7 @@ import {
 } from './types'
 //eslint-disable-next-line n/no-unpublished-import
 import { detect, AGENTS, Agent, getCommand } from '@antfu/ni'
+import { $fetch } from 'ofetch'
 import actionsCore from '@actions/core'
 // eslint-disable-next-line n/no-unpublished-import
 import * as semver from 'semver'
