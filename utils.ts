@@ -497,17 +497,28 @@ export async function applyPackageOverrides(
 		if (!pkg.devDependencies) {
 			pkg.devDependencies = {}
 		}
+		const missingDeps = Object.fromEntries(
+			Object.entries(overrides).filter(
+				([name]) => !pkg.devDependencies[name] && !pkg.dependencies[name],
+			),
+		)
 		pkg.devDependencies = {
 			...pkg.devDependencies,
-			// TODO
-			// ...overrides, // overrides must be present in devDependencies or dependencies otherwise they may not work
+			...missingDeps, // overrides must be present in devDependencies or dependencies otherwise they may not work
 		}
 		if (!pkg.pnpm) {
 			pkg.pnpm = {}
 		}
 		pkg.pnpm.overrides = {
+			...pkg.resolutions,
 			...pkg.pnpm.overrides,
 			...overrides,
+		}
+		if (pkg.resolutions) {
+			pkg.resolutions = {
+				...pkg.resolutions,
+				...overrides,
+			}
 		}
 	} else if (pm === 'yarn') {
 		pkg.resolutions = {
