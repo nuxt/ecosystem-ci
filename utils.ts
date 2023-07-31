@@ -245,6 +245,13 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		await testCommand?.(pkg.scripts)
 	}
 	const overrides = options.overrides || {}
+	const ecosystemPackages = ['ufo']
+	for (const pkg of ecosystemPackages) {
+		const { version } = await $fetch<{ version: string }>(
+			`https://registry.npmjs.org/${pkg}/latest`,
+		)
+		overrides[pkg] = version
+	}
 	if (options.release) {
 		if (overrides.nuxt && overrides.nuxt !== options.release) {
 			throw new Error(
