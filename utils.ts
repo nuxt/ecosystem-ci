@@ -500,7 +500,7 @@ export async function applyPackageOverrides(
 		}
 		const missingDeps = Object.fromEntries(
 			Object.entries(overrides).filter(
-				([name]) => !pkg.devDependencies[name] && !pkg.dependencies[name],
+				([name]) => !pkg.devDependencies[name] && !pkg.dependencies?.[name],
 			),
 		)
 		pkg.devDependencies = {
