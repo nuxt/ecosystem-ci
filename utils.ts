@@ -248,10 +248,9 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 	const overrides = options.overrides || {}
 	const ecosystemPackages = ['ufo']
 	for (const pkg of ecosystemPackages) {
-		const { version } = await $fetch<{ version: string }>(
+		overrides[pkg] ??= await $fetch<{ version: string }>(
 			`https://registry.npmjs.org/${pkg}/latest`,
-		)
-		overrides[pkg] = version
+		).then((r) => r.version)
 	}
 	if (options.release) {
 		if (overrides.nuxt && overrides.nuxt !== options.release) {
@@ -262,15 +261,15 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 			overrides.nuxt = options.release
 		}
 	} else {
-		overrides.nuxt ||= `${options.nuxtPath}/packages/nuxt`
-		overrides.nuxi ||= `${options.nuxtPath}/packages/nuxi`
-		overrides['@nuxt/kit'] ||= `${options.nuxtPath}/packages/kit`
-		overrides['@nuxt/schema'] ||= `${options.nuxtPath}/packages/schema`
-		overrides['@nuxt/test-utils'] ||= `${options.nuxtPath}/packages/test-utils`
-		overrides['@nuxt/vite-builder'] ||= `${options.nuxtPath}/packages/vite`
+		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
+		overrides.nuxi ??= `${options.nuxtPath}/packages/nuxi`
+		overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
+		overrides['@nuxt/schema'] ??= `${options.nuxtPath}/packages/schema`
+		overrides['@nuxt/test-utils'] ??= `${options.nuxtPath}/packages/test-utils`
+		overrides['@nuxt/vite-builder'] ??= `${options.nuxtPath}/packages/vite`
 		overrides[
 			'@nuxt/webpack-builder'
-		] ||= `${options.nuxtPath}/packages/webpack`
+		] ??= `${options.nuxtPath}/packages/webpack`
 
 		const { resolutions } = JSON.parse(
 			await fs.promises.readFile(
