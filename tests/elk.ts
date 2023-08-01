@@ -6,6 +6,6 @@ export async function test(options: RunOptions) {
 		...options,
 		repo: 'elk-zone/elk',
 		build: ['pnpm nuxi prepare'],
-		test: ['vitest run', 'test:typecheck'],
+		test: ['test', 'test:typecheck'],
 	})
 }
