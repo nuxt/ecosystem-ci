@@ -246,7 +246,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		await testCommand?.(pkg.scripts)
 	}
 	const overrides = options.overrides || {}
-	const ecosystemPackages = ['ufo']
+	const ecosystemPackages = ['ufo', 'unstorage']
 	for (const pkg of ecosystemPackages) {
 		overrides[pkg] ??= await $fetch<{ version: string }>(
 			`https://registry.npmjs.org/${pkg}/latest`,
