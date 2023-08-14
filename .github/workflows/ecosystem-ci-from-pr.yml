@@ -39,6 +39,7 @@ on:
           - vite-pwa
           - docus
           - og-image
+          - histoire
           - elk
           - devtools
           - module-builder
@@ -111,6 +112,7 @@ jobs:
           - vite-pwa
           - docus
           - og-image
+          - histoire
           - elk
           - devtools
           - module-builder
