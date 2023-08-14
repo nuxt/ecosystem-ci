@@ -50,6 +50,7 @@ jobs:
           - vite-pwa
           - docus
           - og-image
+          - histoire
           - elk
           - devtools
           - module-builder
