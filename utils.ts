@@ -281,7 +281,8 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 				'utf-8',
 			),
 		)
-		const vueResolution = resolutions?.vue || overrides.vue
+		const vueResolution =
+			overrides.vue === false ? false : resolutions?.vue || overrides.vue
 		if (vueResolution) {
 			overrides['vue'] ||= vueResolution
 			overrides['@vue/compiler-sfc'] ||= vueResolution
