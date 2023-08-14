@@ -263,7 +263,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 	} else {
 		// TODO: remove once nitro is released
 		overrides['nitropack'] ??= 'npm:nitropack-edge'
-		overrides['h3'] ??= 'rc'
+		overrides['h3'] ??= 'npm:h3-nightly'
 
 		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
 		overrides.nuxi ??= `${options.nuxtPath}/packages/nuxi`
