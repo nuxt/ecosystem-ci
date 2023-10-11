@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import { fetch } from 'node-fetch-native'
 import { getPermanentRef, setupEnvironment } from './utils'
 
 type RefType = 'branch' | 'tag' | 'commit' | 'release'
