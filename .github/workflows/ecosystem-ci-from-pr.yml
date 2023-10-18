@@ -36,6 +36,7 @@ on:
           - examples
           - bridge
           - nuxt-vitest
+          - nuxt-com
           - vite-pwa
           - docus
           - og-image
@@ -109,6 +110,7 @@ jobs:
           - examples
           - bridge
           - nuxt-vitest
+          - nuxt-com
           - vite-pwa
           - docus
           - og-image
