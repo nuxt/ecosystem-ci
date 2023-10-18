@@ -31,6 +31,7 @@ on:
           - "-"
           - starter
           - content
+          - ui
           - image
           - pinia
           - examples
@@ -93,6 +94,9 @@ jobs:
           --branch ${{ inputs.branchName }}
           --repo ${{ inputs.repo }}
           ${{ inputs.suite }}
+        env:
+          NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
+          NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
 
   execute-all:
     timeout-minutes: 30
@@ -104,6 +108,7 @@ jobs:
         suite:
           - starter
           - content
+          - ui
           - image
           - pinia
           - examples
@@ -133,6 +138,9 @@ jobs:
           --branch ${{ inputs.branchName }}
           --repo ${{ inputs.repo }}
           ${{ matrix.suite }}
+        env:
+          NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
+          NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
 
   update-comment:
     runs-on: ubuntu-latest

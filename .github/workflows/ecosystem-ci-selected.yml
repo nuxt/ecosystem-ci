@@ -36,6 +36,7 @@ on:
         options:
           - starter
           - content
+          - ui
           - image
           - pinia
           - examples
@@ -69,6 +70,9 @@ jobs:
           --repo ${{ inputs.repo }}
           ${{ inputs.suite }}
         id: ecosystem-ci-run
+        env:
+          NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
+          NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
       - if: always()
         run: pnpm tsx discord-webhook.ts
         env:
