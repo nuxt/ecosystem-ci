@@ -2,14 +2,14 @@ import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
 import { execaCommand } from 'execa'
-import {
+import type {
 	EnvironmentData,
 	Overrides,
 	ProcessEnv,
 	RepoOptions,
 	RunOptions,
 	Task,
-} from './types'
+} from './types.d.ts'
 //eslint-disable-next-line n/no-unpublished-import
 import { detect, AGENTS, Agent, getCommand } from '@antfu/ni'
 import { $fetch } from 'ofetch'
@@ -58,7 +58,6 @@ export async function $(literals: TemplateStringsArray, ...values: any[]) {
 }
 
 export async function setupEnvironment(): Promise<EnvironmentData> {
-	// @ts-expect-error import.meta
 	const root = dirnameFrom(import.meta.url)
 	const workspace = path.resolve(root, 'workspace')
 	nuxtPath = path.resolve(workspace, 'nuxt')
