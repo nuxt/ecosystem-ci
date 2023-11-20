@@ -5,7 +5,7 @@ export async function test(options: RunOptions) {
 	await runInRepo({
 		...options,
 		repo: 'nuxt/image',
-		beforeTest: 'pnpm playwright install chromium',
+		beforeTest: 'pnpm playwright-core install chromium',
 		build: ['dev:prepare', 'build'],
 		test: ['test', 'test:types'],
 	})
