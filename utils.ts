@@ -258,7 +258,13 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		await testCommand?.(pkg.scripts)
 	}
 	const overrides = options.overrides || {}
-	const ecosystemPackages = ['ufo', 'unstorage']
+	const ecosystemPackages = [
+		'ufo',
+		'unstorage',
+		'vite',
+		'@vitejs/plugin-vue',
+		'@vitejs/plugin-vue-jsx',
+	]
 	for (const pkg of ecosystemPackages) {
 		overrides[pkg] ??= await $fetch<{ version: string }>(
 			`https://registry.npmjs.org/${pkg}/latest`,
