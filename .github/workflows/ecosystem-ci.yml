@@ -55,6 +55,8 @@ jobs:
           - histoire
           - elk
           - devtools
+          - cli
+          - test-utils
           - module-builder
           - sanity-module
           - i18n-module
