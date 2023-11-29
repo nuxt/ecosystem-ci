@@ -47,7 +47,6 @@ jobs:
           - pinia
           - examples
           - bridge
-          - nuxt-vitest
           - nuxt-com
           - vite-pwa
           - docus
