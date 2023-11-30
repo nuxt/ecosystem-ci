@@ -6,6 +6,6 @@ export async function test(options: RunOptions) {
 		...options,
 		repo: 'nuxt/test-utils',
 		build: ['dev:prepare', 'prepack'],
-		test: [/* 'test:types', pending nuxt 3.9 */ 'test:examples'],
+		test: ['test:types', 'test:examples'],
 	})
 }
