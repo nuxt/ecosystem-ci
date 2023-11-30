@@ -6,7 +6,7 @@ export async function test(options: RunOptions) {
 		...options,
 		repo: 'harlan-zw/nuxt-og-image',
 		branch: 'main',
-		build: ['build'],
+		build: ['pnpm playwright-core install chromium', 'build'],
 		test: 'test',
 	})
 }
