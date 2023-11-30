@@ -5,7 +5,7 @@ export async function test(options: RunOptions) {
 	await runInRepo({
 		...options,
 		repo: 'nuxt/test-utils',
-		build: ['dev:prepare', 'prepack'],
+		build: ['pnpm playwright-core install chromium', 'dev:prepare', 'prepack'],
 		test: ['test:types', 'test:examples'],
 	})
 }
