@@ -286,7 +286,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 			overrides.nuxi ??= `npm:nuxi-nightly`
 		}
 		if (pkg.name !== '@nuxt/test-utils') {
-			overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
+			// overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
 		}
 
 		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
