@@ -7,8 +7,5 @@ export async function test(options: RunOptions) {
 		repo: 'nuxt/devtools',
 		build: [],
 		test: ['build'],
-		overrides: {
-			rollup: 'latest',
-		},
 	})
 }
