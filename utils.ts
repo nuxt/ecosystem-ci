@@ -313,7 +313,6 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 				overrides['@vue/reactivity'] ||= vueResolution
 				overrides['@vue/shared'] ||= vueResolution
 				overrides['@vue/compiler-dom'] ||= vueResolution
-				overrides['@vue/reactivity-transform'] ||= vueResolution
 				overrides['@vue/runtime-core'] ||= vueResolution
 			}
 		}
