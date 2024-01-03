@@ -4,8 +4,8 @@ import type { RunOptions } from '../types.ts'
 export async function test(options: RunOptions) {
 	await runInRepo({
 		...options,
-		repo: 'elk-zone/elk',
-		build: ['pnpm nuxi prepare'],
-		test: ['test', 'test:typecheck'],
+		repo: 'nuxt-modules/storybook',
+		build: ['dev:prepare', 'build'],
+		test: ['test'],
 	})
 }
