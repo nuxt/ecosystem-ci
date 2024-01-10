@@ -47,6 +47,7 @@ on:
           - test-utils
           - module-builder
           - sanity-module
+          - sitemap
           - i18n-module
 jobs:
   init:
@@ -135,6 +136,7 @@ jobs:
           - test-utils
           - module-builder
           - sanity-module
+          - sitemap
           - i18n-module
       fail-fast: false
     steps:

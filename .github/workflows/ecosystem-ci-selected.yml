@@ -52,6 +52,7 @@ on:
           - test-utils
           - module-builder
           - sanity-module
+          - sitemap
           - i18n-module
 jobs:
   execute-selected-suite:
