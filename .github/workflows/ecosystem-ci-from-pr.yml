@@ -47,6 +47,7 @@ on:
           - test-utils
           - module-builder
           - sanity-module
+          - tailwindcss
           - sitemap
           - i18n-module
 jobs:
@@ -136,6 +137,7 @@ jobs:
           - test-utils
           - module-builder
           - sanity-module
+          - tailwindcss
           - sitemap
           - i18n-module
       fail-fast: false
