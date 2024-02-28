@@ -288,13 +288,16 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		if (pkg.name !== '@nuxt/test-utils') {
 			overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
 		}
+		overrides['nitropack'] ??= `npm:nitropack-nightly`
+		overrides['h3'] ??= `npm:h3-nightly`
 
 		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
 		overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
 		overrides['@nuxt/schema'] ??= `${options.nuxtPath}/packages/schema`
 		overrides['@nuxt/vite-builder'] ??= `${options.nuxtPath}/packages/vite`
-		overrides['@nuxt/webpack-builder'] ??=
-			`${options.nuxtPath}/packages/webpack`
+		overrides[
+			'@nuxt/webpack-builder'
+		] ??= `${options.nuxtPath}/packages/webpack`
 
 		const { resolutions } = JSON.parse(
 			await fs.promises.readFile(
