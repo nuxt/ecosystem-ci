@@ -295,9 +295,8 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
 		overrides['@nuxt/schema'] ??= `${options.nuxtPath}/packages/schema`
 		overrides['@nuxt/vite-builder'] ??= `${options.nuxtPath}/packages/vite`
-		overrides[
-			'@nuxt/webpack-builder'
-		] ??= `${options.nuxtPath}/packages/webpack`
+		overrides['@nuxt/webpack-builder'] ??=
+			`${options.nuxtPath}/packages/webpack`
 
 		const { resolutions } = JSON.parse(
 			await fs.promises.readFile(
