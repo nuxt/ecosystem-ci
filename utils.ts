@@ -288,8 +288,8 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		if (pkg.name !== '@nuxt/test-utils') {
 			overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
 		}
-		overrides['nitropack'] ??= `npm:nitropack-nightly`
-		overrides['h3'] ??= `npm:h3-nightly`
+		// overrides['nitropack'] ??= `npm:nitropack-nightly`
+		// overrides['h3'] ??= `npm:h3-nightly`
 
 		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
 		overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
