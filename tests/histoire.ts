@@ -8,6 +8,7 @@ export async function test(options: RunOptions) {
 		build: ['build', 'pnpm --filter histoire-example-nuxt3 run story:build'],
 		test: ['pnpm --filter histoire-example-nuxt3 run ci'],
 		overrides: {
+			rollup: 'latest',
 			vue: false,
 			'@vue/compiler-sfc': false,
 			'@vue/compiler-ssr': false,
