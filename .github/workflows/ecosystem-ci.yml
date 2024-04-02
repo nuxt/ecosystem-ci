@@ -61,6 +61,7 @@ jobs:
           - tailwindcss
           - sitemap
           - i18n-module
+          - werewolves-assistant
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
