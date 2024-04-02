@@ -7,7 +7,6 @@ export async function test(options: RunOptions) {
 		repo: 'antoinezanardi/werewolves-assistant-web',
 		build: ['build'],
 		test: [
-			'lint:fix',
 			'test:unit',
 			'docker:sandbox-api:start',
 			'test:cucumber:prepare',
