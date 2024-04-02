@@ -4,7 +4,7 @@ import type { RunOptions } from '../types.ts'
 export async function test(options: RunOptions) {
 	await runInRepo({
 		...options,
-		repo: 'antoinezanardi/werewolves-assistant-web',
+		repo: 'antoinezanardi/werewolves-assistant-web-next',
 		build: ['build'],
 		test: [
 			'test:unit',
