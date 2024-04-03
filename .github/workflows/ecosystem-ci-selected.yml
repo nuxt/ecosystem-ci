@@ -55,6 +55,7 @@ on:
           - tailwindcss
           - sitemap
           - i18n-module
+          - werewolves-assistant
 jobs:
   execute-selected-suite:
     timeout-minutes: 30
