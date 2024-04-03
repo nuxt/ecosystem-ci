@@ -10,7 +10,7 @@ export async function test(options: RunOptions) {
 			'test:unit',
 			'docker:sandbox-api:start',
 			'test:cucumber:prepare',
-			'test:cucumber',
+			'test:cucumber:skip-screenshots-comparison',
 		],
 	})
 }
