@@ -54,6 +54,7 @@ jobs:
           - histoire
           - elk
           - devtools
+          - fonts
           - cli
           - test-utils
           - module-builder
