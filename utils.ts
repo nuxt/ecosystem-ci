@@ -16,6 +16,7 @@ import { $fetch } from 'ofetch'
 import actionsCore from '@actions/core'
 // eslint-disable-next-line n/no-unpublished-import
 import * as semver from 'semver'
+import { isCI } from 'std-env'
 
 const isGitHubActions = !!process.env.GITHUB_ACTIONS
 
@@ -98,7 +99,7 @@ export async function setupRepo(options: RepoOptions) {
 		options.branch = 'main'
 	}
 	if (options.shallow == null) {
-		options.shallow = true
+		options.shallow = isCI
 	}
 
 	let { repo, commit, branch, tag, dir, shallow } = options
@@ -337,7 +338,6 @@ export async function setupNuxtRepo(options: Partial<RepoOptions>) {
 		repo,
 		dir: nuxtPath,
 		branch: 'main',
-		shallow: true,
 		...options,
 	})
 
