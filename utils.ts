@@ -306,7 +306,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 			),
 		)
 		const vueResolution =
-			overrides.vue === false ? false : resolutions?.vue || overrides.vue
+			overrides.vue === false ? false : overrides.vue || resolutions?.vue
 		if (vueResolution) {
 			overrides['vue'] ||= vueResolution
 			overrides['@vue/compiler-sfc'] ||= vueResolution
