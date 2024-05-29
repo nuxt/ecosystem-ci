@@ -536,6 +536,15 @@ export async function applyPackageOverrides(
 		if (!pkg.pnpm) {
 			pkg.pnpm = {}
 		}
+		if (pkg.pnpm.patchedDependencies) {
+			for (const item of Object.keys(pkg.pnpm.patchedDependencies)) {
+				for (const override in overrides) {
+					if (item.startsWith(override + '@')) {
+						delete pkg.pnpm.patchedDependencies[item]
+					}
+				}
+			}
+		}
 		pkg.pnpm.overrides = {
 			...pkg.resolutions,
 			...pkg.pnpm.overrides,
