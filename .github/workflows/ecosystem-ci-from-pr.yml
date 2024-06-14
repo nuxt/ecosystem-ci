@@ -44,6 +44,7 @@ on:
           - elk
           - devtools
           - fonts
+          - scripts
           - cli
           - test-utils
           - module-builder
@@ -136,6 +137,7 @@ jobs:
           - elk
           - devtools
           - fonts
+          - scripts
           - cli
           - test-utils
           - module-builder
