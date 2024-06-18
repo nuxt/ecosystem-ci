@@ -24,6 +24,14 @@ on:
         required: true
         type: string
         default: "main"
+      nitro:
+        description: "the version of nitro to use"
+        type: choice
+        options:
+          - "v3 nightly"
+          - "v2 nightly"
+          - "v2 latest"
+        default: "v2 latest"
       repo:
         description: "nuxt repository to use"
         required: true
@@ -79,6 +87,7 @@ jobs:
         env:
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
+          NITRO_VERSION: ${{ inputs.nitro }}
       - if: always()
         run: pnpm tsx discord-webhook.ts
         env:
