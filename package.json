@@ -24,11 +24,11 @@
       "eslint --fix"
     ]
   },
-  "packageManager": "pnpm@8.15.8",
+  "packageManager": "pnpm@9.4.0",
   "type": "module",
   "engines": {
     "node": ">=18",
-    "pnpm": "^8.0.0"
+    "pnpm": "^9.4.0"
   },
   "repository": {
     "type": "git",
@@ -42,25 +42,25 @@
   "dependencies": {
     "@actions/core": "^1.10.1",
     "cac": "^6.7.14",
-    "execa": "^8.0.1",
+    "execa": "^9.2.0",
     "node-fetch-native": "^1.6.4",
     "ofetch": "^1.3.4",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
     "@antfu/ni": "^0.21.12",
-    "@types/node": "^20.12.8",
+    "@types/node": "^20.14.5",
     "@types/semver": "^7.5.8",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     "eslint": "^8.57.0",
     "eslint-define-config": "^2.1.0",
-    "eslint-plugin-n": "^17.4.0",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5",
-    "semver": "^7.6.0",
+    "eslint-plugin-n": "^17.9.0",
+    "lint-staged": "^15.2.7",
+    "prettier": "^3.3.2",
+    "semver": "^7.6.2",
     "simple-git-hooks": "^2.11.1",
-    "tsx": "^4.9.0",
+    "tsx": "^4.15.6",
     "typescript": "^5.4.5"
   }
 }
