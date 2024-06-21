@@ -72,9 +72,6 @@ jobs:
           - sitemap
           - i18n-module
           - werewolves-assistant
-        exclude:
-          - suite: bridge
-            branch: main
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
