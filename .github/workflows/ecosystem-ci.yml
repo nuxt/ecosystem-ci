@@ -47,6 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        branch:
+          - 3.x
+          - main
         suite:
           - starter
           - content
@@ -72,6 +75,9 @@ jobs:
           - sitemap
           - i18n-module
           - werewolves-assistant
+        exclude:
+          - suite: bridge
+            branch: main
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -84,7 +90,7 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm tsx ecosystem-ci.ts
-          --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ inputs.ref || github.event.client_payload.ref || 'main' }}
+          --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ inputs.ref || github.event.client_payload.ref || matrix.suite || 'main' }}
           --repo ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           ${{ matrix.suite }}
         id: ecosystem-ci-run
@@ -98,7 +104,7 @@ jobs:
         env:
           WORKFLOW_NAME: ci
           REF_TYPE: ${{ inputs.refType || github.event.client_payload.refType || 'branch' }}
-          REF: ${{ inputs.ref || github.event.client_payload.ref || 'main' }}
+          REF: ${{ inputs.ref || github.event.client_payload.ref || matrix.suite || 'main' }}
           REPO: ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           SUITE: ${{ matrix.suite }}
           STATUS: ${{ job.status }}
