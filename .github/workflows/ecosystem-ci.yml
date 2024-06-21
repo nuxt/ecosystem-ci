@@ -101,7 +101,7 @@ jobs:
         env:
           WORKFLOW_NAME: ci
           REF_TYPE: ${{ inputs.refType || github.event.client_payload.refType || 'branch' }}
-          REF: ${{ inputs.ref || github.event.client_payload.ref || matrix.suite || '3.x' }}
+          REF: ${{ inputs.ref || github.event.client_payload.ref || '3.x' }}
           REPO: ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           SUITE: ${{ matrix.suite }}
           STATUS: ${{ job.status }}
