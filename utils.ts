@@ -292,10 +292,10 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		if (process.env.NITRO_VERSION === 'v3 nightly') {
 			overrides['nitro'] ??= `npm:nitropack-nightly@3x`
 			overrides['nitropack'] ??= `npm:nitropack-nightly@3x`
-			overrides['h3'] ??= `npm:h3-nightly@2x`
+			overrides['h3'] ??= `npm:h3-nightly@latest`
 		} else if (process.env.NITRO_VERSION === 'v2 nightly') {
-			overrides['nitropack'] ??= `npm:nitropack-nightly@2x`
-			overrides['h3'] ??= `npm:h3-nightly@1x`
+			overrides['nitropack'] ??= `npm:nitropack-nightly@latest`
+			overrides['h3'] ??= `npm:h3-nightly@latest`
 		}
 
 		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
