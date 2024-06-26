@@ -294,7 +294,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 			overrides['nitropack'] ??= `npm:nitropack-nightly@3x`
 			overrides['h3'] ??= `npm:h3-nightly@latest`
 		} else if (process.env.NITRO_VERSION === 'v2 nightly') {
-			overrides['nitropack'] ??= `npm:nitropack-nightly@^2`
+			overrides['nitropack'] ??= `npm:nitropack-nightly@latest`
 			overrides['h3'] ??= `npm:h3-nightly@latest`
 		}
 
