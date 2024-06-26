@@ -48,6 +48,7 @@ on:
           - image
           - pinia
           - examples
+          - example-layers-monorepo
           - bridge
           - nuxt-com
           - vite-pwa
