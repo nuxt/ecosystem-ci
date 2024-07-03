@@ -392,9 +392,11 @@ export async function getPermanentRef() {
 export async function buildNuxt({ verify = false }) {
 	cd(nuxtPath)
 	const frozenInstall = getCommand('pnpm', 'frozen')
+	const runPrepare = getCommand('pnpm', 'run', ['dev:prepare'])
 	const runBuild = getCommand('pnpm', 'run', ['build'])
 	const runTest = getCommand('pnpm', 'run', ['test'])
 	await $`${frozenInstall}`
+	await $`${runPrepare}`
 	await $`${runBuild}`
 	if (verify) {
 		await $`${runTest}`
