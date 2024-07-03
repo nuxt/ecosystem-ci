@@ -290,9 +290,9 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 			overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
 		}
 		if (process.env.NITRO_VERSION === 'v3 nightly') {
-			overrides['nitro'] ??= `npm:nitropack-nightly@3x`
-			overrides['nitropack'] ??= `npm:nitropack-nightly@3x`
-			overrides['h3'] ??= `npm:h3-nightly@latest`
+			overrides['nitro'] ??= `npm:nitro-nightly@3x`
+			overrides['nitropack'] ??= `npm:nitro-nightly@3x`
+			overrides['h3'] ??= `npm:h3-nightly@2.0.0-1718872656.6765a6e`
 		} else if (process.env.NITRO_VERSION === 'v2 nightly') {
 			overrides['nitropack'] ??= `npm:nitropack-nightly@latest`
 			overrides['h3'] ??= `npm:h3-nightly@latest`
