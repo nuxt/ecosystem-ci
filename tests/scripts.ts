@@ -7,7 +7,7 @@ export async function test(options: RunOptions) {
 		repo: 'nuxt/scripts',
 		beforeTest: 'pnpm playwright-core install chromium',
 		build: ['dev:prepare'],
-		test: ['test', 'build', 'test:types'],
+		test: ['test', 'build', 'typecheck'],
 		overrides: {
 			esbuild: 'latest',
 		},
