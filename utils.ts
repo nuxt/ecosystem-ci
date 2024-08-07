@@ -305,12 +305,15 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		overrides['@nuxt/webpack-builder'] ??=
 			`${options.nuxtPath}/packages/webpack`
 
-		const { resolutions } = JSON.parse(
+		const { resolutions, devDependencies } = JSON.parse(
 			await fs.promises.readFile(
 				path.join(options.nuxtPath, 'package.json'),
 				'utf-8',
 			),
 		)
+		if (overrides['vue-router'] !== false) {
+			overrides['vue-router'] ||= devDependencies?.['vue-router']
+		}
 		const vueResolution =
 			overrides.vue === false ? false : overrides.vue || resolutions?.vue
 		if (vueResolution) {
