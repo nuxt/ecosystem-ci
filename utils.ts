@@ -46,9 +46,15 @@ export async function $(literals: TemplateStringsArray, ...values: any[]) {
 		stdio: 'pipe',
 		cwd,
 	})
-	proc.stdin && process.stdin.pipe(proc.stdin)
-	proc.stdout && proc.stdout.pipe(process.stdout)
-	proc.stderr && proc.stderr.pipe(process.stderr)
+	if (proc.stdin) {
+		process.stdin.pipe(proc.stdin)
+	}
+	if (proc.stdout) {
+		proc.stdout.pipe(process.stdout)
+	}
+	if (proc.stderr) {
+		proc.stderr.pipe(process.stderr)
+	}
 	const result = await proc
 
 	if (isGitHubActions) {
