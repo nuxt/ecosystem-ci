@@ -281,6 +281,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		'ufo',
 		'unstorage',
 		'vite',
+		'rollup',
 		'@vitejs/plugin-vue',
 		'@vitejs/plugin-vue-jsx',
 	]
