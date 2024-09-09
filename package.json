@@ -24,7 +24,7 @@
       "eslint --fix"
     ]
   },
-  "packageManager": "pnpm@9.9.0",
+  "packageManager": "pnpm@9.10.0",
   "type": "module",
   "engines": {
     "node": ">=18",
@@ -48,8 +48,8 @@
     "std-env": "^3.7.0"
   },
   "devDependencies": {
-    "@antfu/ni": "^0.22.1",
-    "@types/node": "^20.16.4",
+    "@antfu/ni": "^0.23.0",
+    "@types/node": "^20.16.5",
     "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@typescript-eslint/parser": "^8.4.0",
