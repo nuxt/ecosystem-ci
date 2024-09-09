@@ -71,6 +71,7 @@ on:
           - sitemap
           - i18n-module
           - werewolves-assistant
+          - storybook
 jobs:
   execute-selected-suite:
     timeout-minutes: 30
