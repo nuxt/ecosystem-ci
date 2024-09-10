@@ -28,8 +28,8 @@ importers:
         version: 3.7.0
     devDependencies:
       '@antfu/ni':
-        specifier: ^0.23.0
-        version: 0.23.0
+        specifier: ^0.22.1
+        version: 0.22.4
       '@types/node':
         specifier: ^20.16.5
         version: 20.16.5
@@ -82,8 +82,8 @@ packages:
   '@actions/http-client@2.1.0':
     resolution: {integrity: sha512-BonhODnXr3amchh4qkmjPMUO8mFi/zLaaCeCAJZqch8iQqyDnVIkySjB38VHAC8IJ+bnlgfOqlhpyCUZHlQsqw==}
 
-  '@antfu/ni@0.23.0':
-    resolution: {integrity: sha512-R5/GkA3PfGewAXLzz6lN5XagunF6PKeDtWt8dbZQXvHfebLS0qEczV+Azg/d+tKgSh6kRBpxvu8oSjARdPtw0A==}
+  '@antfu/ni@0.22.4':
+    resolution: {integrity: sha512-uCzh43cmUwQQcgv2BPyo0JWOMgXhcaE+F2I6Ucmfc7f9ir52lfA4OtZXdfL5D8cMa5GAwuCSNqOshIol8YN82g==}
     hasBin: true
 
   '@esbuild/aix-ppc64@0.23.0':
@@ -1049,7 +1049,7 @@ snapshots:
     dependencies:
       tunnel: 0.0.6
 
-  '@antfu/ni@0.23.0': {}
+  '@antfu/ni@0.22.4': {}
 
   '@esbuild/aix-ppc64@0.23.0':
     optional: true
