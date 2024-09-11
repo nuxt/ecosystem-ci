@@ -58,6 +58,7 @@ on:
           - devtools
           - fonts
           - scripts
+          - icon
           - cli
           - test-utils
           - module-builder
@@ -154,6 +155,7 @@ jobs:
           - devtools
           - fonts
           - scripts
+          - icon
           - cli
           - test-utils
           - module-builder

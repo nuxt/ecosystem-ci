@@ -69,6 +69,7 @@ jobs:
           - devtools
           - fonts
           - scripts
+          - icon
           - cli
           - test-utils
           - module-builder
