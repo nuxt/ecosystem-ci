@@ -305,7 +305,6 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 		if (pkg.name !== '@nuxt/test-utils') {
 			overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
 		}
-		overrides['jiti'] ??= `npm:jiti-nightly@latest`
 		if (process.env.NITRO_VERSION === 'v3 nightly') {
 			overrides['nitro'] ??= `npm:nitro-nightly@3x`
 			overrides['nitropack'] ??= `npm:nitro-nightly@3x`
