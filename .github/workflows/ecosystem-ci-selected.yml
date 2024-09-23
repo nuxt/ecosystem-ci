@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       refType:
-        description: "type of nuxt ref to use"
+        description: type of nuxt ref to use
         required: true
         type: choice
         options:
@@ -22,27 +22,27 @@ on:
           - tag
           - commit
           - release
-        default: "branch"
+        default: branch
       ref:
-        description: "nuxt ref to use"
+        description: nuxt ref to use
         required: true
         type: string
-        default: "main"
+        default: main
       nitro:
-        description: "the version of nitro to use"
+        description: the version of nitro to use
         type: choice
         options:
-          - "v3 nightly"
-          - "v2 nightly"
-          - "v2 latest"
-        default: "v2 latest"
+          - v3 nightly
+          - v2 nightly
+          - v2 latest
+        default: v2 latest
       repo:
-        description: "nuxt repository to use"
+        description: nuxt repository to use
         required: true
         type: string
-        default: "nuxt/nuxt"
+        default: nuxt/nuxt
       suite:
-        description: "testsuite to run"
+        description: testsuite to run
         required: true
         type: choice
         options:

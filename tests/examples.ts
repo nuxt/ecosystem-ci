@@ -1,11 +1,11 @@
-import { runInRepo } from '../utils.ts'
 import type { RunOptions } from '../types.ts'
+import { runInRepo } from '../utils.ts'
 
 export async function test(options: RunOptions) {
-	await runInRepo({
-		...options,
-		repo: 'nuxt/examples',
-		build: [],
-		test: ['build'],
-	})
+  await runInRepo({
+    ...options,
+    repo: 'nuxt/examples',
+    build: [],
+    test: ['build'],
+  })
 }

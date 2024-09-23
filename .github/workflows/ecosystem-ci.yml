@@ -12,11 +12,11 @@ env:
 
 on:
   schedule:
-    - cron: "0 5 * * 1,3,5" # monday,wednesday,friday 5AM
+    - cron: '0 5 * * 1,3,5' # monday,wednesday,friday 5AM
   workflow_dispatch:
     inputs:
       refType:
-        description: "type of ref"
+        description: type of ref
         required: true
         type: choice
         options:
@@ -24,25 +24,25 @@ on:
           - tag
           - commit
           - release
-        default: "branch"
+        default: branch
       ref:
-        description: "nuxt ref to use"
+        description: nuxt ref to use
         required: true
         type: string
-        default: "main"
+        default: main
       nitro:
-        description: "the version of nitro to use"
+        description: the version of nitro to use
         type: choice
         options:
-          - "v3 nightly"
-          - "v2 nightly"
-          - "v2 latest"
-        default: "v2 latest"
+          - v3 nightly
+          - v2 nightly
+          - v2 latest
+        default: v2 latest
       repo:
-        description: "nuxt repository to use"
+        description: nuxt repository to use
         required: true
         type: string
-        default: "nuxt/nuxt"
+        default: nuxt/nuxt
   repository_dispatch:
     types: [ecosystem-ci]
 jobs:

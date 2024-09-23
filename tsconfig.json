@@ -1,21 +1,21 @@
 {
-	"include": ["./**/*.ts"],
-	"exclude": ["**/node_modules/**", "./workspace/**"],
-	"compilerOptions": {
-		"target": "esnext",
-		"module": "nodenext",
-		"moduleResolution": "nodenext",
-		"allowImportingTsExtensions": true,
-		"noEmit": true,
-		"skipLibCheck": true,
-		"strict": true,
-		"declaration": true,
-		"noImplicitOverride": true,
-		"noUnusedLocals": true,
-		"esModuleInterop": true,
-		"useUnknownInCatchVariables": false,
-		"allowSyntheticDefaultImports": true,
-		"lib": ["esnext"],
-		"sourceMap": true
-	}
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "useUnknownInCatchVariables": false,
+    "declaration": true,
+    "noEmit": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["./**/*.ts", "eslint.config.js"],
+  "exclude": ["**/node_modules/**", "./workspace/**"]
 }

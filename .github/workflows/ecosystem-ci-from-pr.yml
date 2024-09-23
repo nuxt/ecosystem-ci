@@ -14,33 +14,33 @@ on:
   workflow_dispatch:
     inputs:
       prNumber:
-        description: "PR number (e.g. 9887)"
+        description: PR number (e.g. 9887)
         required: true
         type: string
       branchName:
-        description: "nuxt branch to use"
+        description: nuxt branch to use
         required: true
         type: string
-        default: "main"
+        default: main
       nitro:
-        description: "the version of nitro to use"
+        description: the version of nitro to use
         type: choice
         options:
-          - "v3 nightly"
-          - "v2 nightly"
-          - "v2 latest"
-        default: "v2 latest"
+          - v3 nightly
+          - v2 nightly
+          - v2 latest
+        default: v2 latest
       repo:
-        description: "nuxt repository to use"
+        description: nuxt repository to use
         required: true
         type: string
-        default: "nuxt/nuxt"
+        default: nuxt/nuxt
       suite:
-        description: "test suite to run. runs all test suites when `-`."
+        description: test suite to run. runs all test suites when `-`.
         required: false
         type: choice
         options:
-          - "-"
+          - '-'
           - starter
           - content
           - ui
@@ -79,7 +79,7 @@ jobs:
         with:
           app_id: ${{ secrets.PR_GITHUB_APP_ID }}
           private_key: ${{ secrets.PR_GITHUB_APP_PRIVATE_KEY }}
-          repository: "${{ github.repository_owner }}/nuxt"
+          repository: '${{ github.repository_owner }}/nuxt'
       - id: create-comment
         uses: actions/github-script@v7
         with:
@@ -101,7 +101,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: init
-    if: "inputs.suite != '-'"
+    if: 'inputs.suite != ''-'''
     outputs:
       ref: ${{ steps.get-ref.outputs.ref }}
     steps:
@@ -132,7 +132,7 @@ jobs:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     needs: init
-    if: "inputs.suite == '-'"
+    if: 'inputs.suite == ''-'''
     outputs:
       ref: ${{ steps.get-ref.outputs.ref }}
     strategy:
@@ -199,7 +199,7 @@ jobs:
         with:
           app_id: ${{ secrets.PR_GITHUB_APP_ID }}
           private_key: ${{ secrets.PR_GITHUB_APP_PRIVATE_KEY }}
-          repository: "${{ github.repository_owner }}/nuxt"
+          repository: '${{ github.repository_owner }}/nuxt'
       - uses: actions/github-script@v7
         with:
           github-token: ${{ steps.generate-token.outputs.token }}

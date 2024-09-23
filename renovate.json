@@ -1,14 +1,14 @@
 {
-	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
-	"extends": [
-		"github>nuxt/renovate-config-nuxt",
-		"schedule:weekly",
-		"group:allNonMajor"
-	],
-	"packageRules": [
-		{
-			"depTypeList": ["peerDependencies", "engines"],
-			"enabled": false
-		}
-	]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>nuxt/renovate-config-nuxt",
+    "schedule:weekly",
+    "group:allNonMajor"
+  ],
+  "packageRules": [
+    {
+      "depTypeList": ["peerDependencies", "engines"],
+      "enabled": false
+    }
+  ]
 }

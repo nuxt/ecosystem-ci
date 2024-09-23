@@ -1,56 +1,57 @@
-// eslint-disable-next-line n/no-unpublished-import
+// eslint-disable-next-line node/no-unpublished-import
 import type { Agent } from '@antfu/ni'
+
 export interface EnvironmentData {
-	root: string
-	workspace: string
-	nuxtPath: string
-	cwd: string
-	env: ProcessEnv
+  root: string
+  workspace: string
+  nuxtPath: string
+  cwd: string
+  env: ProcessEnv
 }
 
 export interface RunOptions {
-	workspace: string
-	root: string
-	nuxtPath: string
-	nuxtMajor: number
-	verify?: boolean
-	skipGit?: boolean
-	release?: string
-	agent?: Agent
-	build?: Task | Task[]
-	test?: Task | Task[]
-	beforeInstall?: Task | Task[]
-	beforeBuild?: Task | Task[]
-	beforeTest?: Task | Task[]
+  workspace: string
+  root: string
+  nuxtPath: string
+  nuxtMajor: number
+  verify?: boolean
+  skipGit?: boolean
+  release?: string
+  agent?: Agent
+  build?: Task | Task[]
+  test?: Task | Task[]
+  beforeInstall?: Task | Task[]
+  beforeBuild?: Task | Task[]
+  beforeTest?: Task | Task[]
 }
 
-type Task = string | { script: string; args?: string[] } | (() => Promise<any>)
+type Task = string | { script: string, args?: string[] } | (() => Promise<any>)
 
 export interface CommandOptions {
-	suites?: string[]
-	repo?: string
-	branch?: string
-	tag?: string
-	commit?: string
-	release?: string
-	verify?: boolean
-	skipGit?: boolean
+  suites?: string[]
+  repo?: string
+  branch?: string
+  tag?: string
+  commit?: string
+  release?: string
+  verify?: boolean
+  skipGit?: boolean
 }
 
 export interface RepoOptions {
-	repo: string
-	dir?: string
-	branch?: string
-	tag?: string
-	commit?: string
-	shallow?: boolean
-	overrides?: Overrides
+  repo: string
+  dir?: string
+  branch?: string
+  tag?: string
+  commit?: string
+  shallow?: boolean
+  overrides?: Overrides
 }
 
 export interface Overrides {
-	[key: string]: string | boolean
+  [key: string]: string | boolean
 }
 
 export interface ProcessEnv {
-	[key: string]: string | undefined
+  [key: string]: string | undefined
 }
