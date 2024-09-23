@@ -297,6 +297,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
   const overrides = options.overrides || {}
   const ecosystemPackages = [
     'ufo',
+    'ofetch',
     'unstorage',
     'vite',
     'rollup',
