@@ -31,8 +31,8 @@ importers:
         specifier: ^3.7.1
         version: 3.7.1(@typescript-eslint/utils@8.6.0(eslint@9.11.0)(typescript@5.6.2))(@vue/compiler-sfc@3.5.8)(eslint@9.11.0)(typescript@5.6.2)
       '@antfu/ni':
-        specifier: ^0.22.1
-        version: 0.22.4
+        specifier: ^0.23.2
+        version: 0.23.2
       '@types/node':
         specifier: ^22.5.5
         version: 22.5.5
@@ -131,8 +131,8 @@ packages:
   '@antfu/install-pkg@0.4.1':
     resolution: {integrity: sha512-T7yB5QNG29afhWVkVq7XeIMBa5U/vs9mX69YqayXypPRmYzUmzwnYltplHmPtZ4HPCn+sQKeXW8I47wCbuBOjw==}
 
-  '@antfu/ni@0.22.4':
-    resolution: {integrity: sha512-uCzh43cmUwQQcgv2BPyo0JWOMgXhcaE+F2I6Ucmfc7f9ir52lfA4OtZXdfL5D8cMa5GAwuCSNqOshIol8YN82g==}
+  '@antfu/ni@0.23.2':
+    resolution: {integrity: sha512-FSEVWXvwroExDXUu8qV6Wqp2X3D1nJ0Li4LFymCyvCVrm7I3lNfG0zZWSWvGU1RE7891eTnFTyh31L3igOwNKQ==}
     hasBin: true
 
   '@antfu/utils@0.7.10':
@@ -1953,7 +1953,7 @@ snapshots:
       package-manager-detector: 0.2.0
       tinyexec: 0.3.0
 
-  '@antfu/ni@0.22.4': {}
+  '@antfu/ni@0.23.2': {}
 
   '@antfu/utils@0.7.10': {}
 

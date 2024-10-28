@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.1",
-    "@antfu/ni": "^0.22.1",
+    "@antfu/ni": "^0.23.2",
     "@types/node": "^22.5.5",
     "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^8.6.0",

@@ -13,9 +13,7 @@ import { fileURLToPath } from 'node:url'
 import actionsCore from '@actions/core'
 import { execaCommand } from 'execa'
 // eslint-disable-next-line node/no-unpublished-import
-import type { Agent } from '@antfu/ni'
-// eslint-disable-next-line node/no-unpublished-import
-import { AGENTS, detect, getCommand } from '@antfu/ni'
+import { AGENTS, detect, getCommand, serializeCommand } from '@antfu/ni'
 import { $fetch } from 'ofetch'
 // eslint-disable-next-line node/no-unpublished-import
 import * as semver from 'semver'
@@ -180,7 +178,7 @@ export async function setupRepo(options: RepoOptions) {
 
 function toCommand(
   task: Task | Task[] | void,
-  agent: Agent,
+  agent: (typeof AGENTS)[number],
 ): ((scripts: any) => Promise<any>) | void {
   return async (scripts: any) => {
     const tasks = Array.isArray(task) ? task : [task]
@@ -191,7 +189,7 @@ function toCommand(
       else if (typeof task === 'string') {
         if (scripts[task] != null) {
           const runTaskWithAgent = getCommand(agent, 'run', [task])
-          await $`${runTaskWithAgent}`
+          await $`${serializeCommand(runTaskWithAgent)}`
         }
         else {
           await $`${task}`
@@ -267,11 +265,9 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     }
     options.agent = detectedAgent
   }
-  if (!AGENTS[options.agent]) {
+  if (!AGENTS.includes(options.agent)) {
     throw new Error(
-      `Invalid agent ${options.agent}. Allowed values: ${Object.keys(
-        AGENTS,
-      ).join(', ')}`,
+      `Invalid agent ${options.agent}. Allowed values: ${AGENTS.join(', ')}`,
     )
   }
   const agent = options.agent
@@ -288,7 +284,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
 
   if (verify && test) {
     const frozenInstall = getCommand(agent, 'frozen')
-    await $`${frozenInstall}`
+    await $`${serializeCommand(frozenInstall)}`
     await beforeBuildCommand?.(pkg.scripts)
     await buildCommand?.(pkg.scripts)
     await beforeTestCommand?.(pkg.scripts)
@@ -440,11 +436,11 @@ export async function buildNuxt({ verify = false }) {
   const runPrepare = getCommand('pnpm', 'run', ['dev:prepare'])
   const runBuild = getCommand('pnpm', 'run', ['build'])
   const runTest = getCommand('pnpm', 'run', ['test'])
-  await $`${frozenInstall}`
-  await $`${runPrepare}`
-  await $`${runBuild}`
+  await $`${serializeCommand(frozenInstall)}`
+  await $`${serializeCommand(runPrepare)}`
+  await $`${serializeCommand(runBuild)}`
   if (verify) {
-    await $`${runTest}`
+    await $`${serializeCommand(runTest)}`
   }
 }
 
