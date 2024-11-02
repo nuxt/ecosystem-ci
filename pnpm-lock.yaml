@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  nitropack: npm:nitropack-nightly@2.10.1-20241102-222646.615cc056
+
 importers:
 
   .:

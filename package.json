@@ -50,6 +50,9 @@
     "tsx": "^4.19.1",
     "typescript": "^5.6.2"
   },
+  "resolutions": {
+    "nitropack": "npm:nitropack-nightly@2.10.1-20241102-222646.615cc056"
+  },
   "simple-git-hooks": {
     "pre-commit": "pnpm exec lint-staged --concurrent false"
   },
