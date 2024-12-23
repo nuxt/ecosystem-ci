@@ -18,7 +18,7 @@
     "pnpm": "^9.4.0"
   },
   "scripts": {
-    "prepare": "pnpm exec simple-git-hooks",
+    "prepare": "pnpm simple-git-hooks",
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
     "typecheck": "tsc",
@@ -51,7 +51,7 @@
     "typescript": "^5.6.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm exec lint-staged --concurrent false"
+    "pre-commit": "npx lint-staged --concurrent false"
   },
   "lint-staged": {
     "*.{ts,js,json,md,yaml}": [
