@@ -8,6 +8,7 @@ export async function test(options: RunOptions) {
     build: ['pnpm playwright-core install chromium', 'dev:prepare', 'prepack'],
     test: ['test:types', 'test:examples'],
     overrides: {
+      vite: false,
       esbuild: 'latest',
     },
   })
