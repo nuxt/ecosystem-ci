@@ -301,6 +301,8 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     'unstorage',
     'vite',
     'rollup',
+    'consola',
+    'vue-router',
     '@vitejs/plugin-vue',
     '@vitejs/plugin-vue-jsx',
   ]
