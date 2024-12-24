@@ -204,7 +204,7 @@ function toCommand(
             task.script,
             ...(task.args ?? []),
           ])
-          await $`${runTaskWithAgent}`
+          await $`${serializeCommand(runTaskWithAgent)}`
         }
         else {
           throw new Error(
