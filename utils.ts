@@ -318,12 +318,12 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     }
   }
   else {
-    if (pkg.name !== 'nuxi') {
-      overrides.nuxi ??= `npm:nuxi-nightly`
-    }
-    if (pkg.name !== '@nuxt/test-utils') {
-      overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
-    }
+    // if (pkg.name !== 'nuxi') {
+    //   overrides.nuxi ??= `npm:nuxi-nightly`
+    // }
+    // if (pkg.name !== '@nuxt/test-utils') {
+    //   overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
+    // }
     if (process.env.NITRO_VERSION === 'v3 nightly') {
       overrides.nitro ??= `npm:nitro-nightly@3x`
       overrides.nitropack ??= `npm:nitro-nightly@3x`
