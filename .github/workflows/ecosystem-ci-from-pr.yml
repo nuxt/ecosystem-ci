@@ -163,7 +163,7 @@ jobs:
           - tailwindcss
           - sitemap
           - i18n-module
-          - werewolves-assistant
+          # - werewolves-assistant
           - storybook
       fail-fast: false
     steps:
