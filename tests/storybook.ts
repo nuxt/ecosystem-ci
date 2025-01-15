@@ -7,5 +7,8 @@ export async function test(options: RunOptions) {
     repo: 'nuxt-modules/storybook',
     build: ['dev:prepare', 'build', 'dev:build', 'example:showcase:build'],
     test: ['test'],
+    overrides: {
+      vite: false,
+    },
   })
 }
