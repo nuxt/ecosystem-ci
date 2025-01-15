@@ -6,6 +6,6 @@ export async function test(options: RunOptions) {
     ...options,
     repo: 'nuxt/cli',
     build: ['build'],
-    test: ['test:dist'],
+    test: ['test:dist', 'test:unit'],
   })
 }
