@@ -6,7 +6,7 @@ export async function test(options: RunOptions) {
     ...options,
     repo: 'nuxt-modules/tailwindcss',
     branch: 'main',
-    build: ['build'],
+    build: ['dev:prepare', 'build'],
     test: ['test'],
   })
 }
