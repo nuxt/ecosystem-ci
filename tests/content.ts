@@ -5,7 +5,7 @@ export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
     repo: 'nuxt/content',
-    build: ['prepare', 'build'],
+    build: ['dev:prepare', 'prepack'],
     test: ['test'],
   })
 }
