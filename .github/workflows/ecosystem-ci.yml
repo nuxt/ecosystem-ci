@@ -86,7 +86,7 @@ jobs:
         with:
           node-version: 20
         id: setup-node
-      - run: corepack enable
+      - run: npm i -g --force corepack && corepack enable
       - run: pnpm --version
       - run: pnpm i --frozen-lockfile
       - run: >-
