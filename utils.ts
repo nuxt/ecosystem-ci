@@ -334,7 +334,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       overrides.h3 ??= `npm:h3-nightly@latest`
     }
 
-    overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
+		overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
     overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
     overrides['@nuxt/schema'] ??= `${options.nuxtPath}/packages/schema`
     overrides['@nuxt/vite-builder'] ??= `${options.nuxtPath}/packages/vite`
@@ -347,7 +347,12 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
         'utf-8',
       ),
     )
-    if (overrides['vue-router'] !== false) {
+
+		// ensure unhead is always the same version as @unhead/vue
+		overrides['@unhead/vue'] ??= devDependencies['@unhead/vue']
+		overrides.unhead ??= overrides['@unhead/vue']
+
+		if (overrides['vue-router'] !== false) {
       overrides['vue-router'] ||= devDependencies?.['vue-router']
     }
     const vueResolution
