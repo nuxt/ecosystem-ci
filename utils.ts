@@ -348,7 +348,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       ),
     )
 
-    // ensure unhead is always the same version as @unhead/vue
+    // lock unhead to the same version as Nuxt's @unhead/vue
     overrides['@unhead/vue'] ??= devDependencies['@unhead/vue']
     overrides.unhead ??= overrides['@unhead/vue']
 
