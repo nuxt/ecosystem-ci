@@ -2,7 +2,7 @@
   "name": "nuxt-ecosystem-ci",
   "type": "module",
   "version": "0.0.1",
-  "packageManager": "pnpm@9.15.1",
+  "packageManager": "pnpm@10.5.2",
   "description": "Nuxt Ecosystem CI",
   "license": "MIT",
   "homepage": "https://github.com/nuxt/ecosystem-ci#readme",
@@ -14,8 +14,7 @@
     "url": "https://github.com/nuxt/ecosystem-ci/issues"
   },
   "engines": {
-    "node": ">=18",
-    "pnpm": "^9.4.0"
+    "node": ">=18"
   },
   "scripts": {
     "prepare": "pnpm simple-git-hooks",
@@ -30,25 +29,25 @@
     "@actions/core": "^1.11.1",
     "cac": "^6.7.14",
     "execa": "^9.5.2",
-    "node-fetch-native": "^1.6.4",
+    "node-fetch-native": "^1.6.6",
     "ofetch": "^1.4.1",
     "std-env": "^3.8.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^3.12.1",
-    "@antfu/ni": "^0.23.2",
-    "@types/node": "^22.10.2",
+    "@antfu/eslint-config": "^4.3.0",
+    "@antfu/ni": "^23.3.1",
+    "@types/node": "^22.13.5",
     "@types/semver": "^7.5.8",
-    "@typescript-eslint/eslint-plugin": "^8.18.2",
-    "@typescript-eslint/parser": "^8.18.2",
-    "eslint": "^9.17.0",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
+    "eslint": "^9.21.0",
     "eslint-define-config": "^2.1.0",
     "eslint-plugin-n": "^17.15.1",
-    "lint-staged": "^15.2.11",
-    "semver": "^7.6.3",
+    "lint-staged": "^15.4.3",
+    "semver": "^7.7.1",
     "simple-git-hooks": "^2.11.1",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged --concurrent false"
