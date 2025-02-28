@@ -16,6 +16,7 @@ export async function test(options: RunOptions) {
       'nuxt': '^2.17.1',
       'vue': '^2.7.14',
       'vue-router': false,
+      '@unhead/vue': false,
       '@vue/compiler-sfc': '^2.7.14',
       '@nuxt/webpack-builder': false,
       '@nuxt/vite-builder': false,
