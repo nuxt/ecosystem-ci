@@ -114,6 +114,8 @@ function initWorkspace(workspace: string) {
   if (!fs.existsSync(tsconfig)) {
     fs.writeFileSync(tsconfig, '{}\n', 'utf-8')
   }
+  // TODO: https://github.com/unjs/pkg-types/issues/218
+  fs.appendFileSync(path.join(workspace, '.nuxtrc'), 'workspaceDir=.\n', 'utf-8')
 }
 
 export async function setupRepo(options: RepoOptions) {
