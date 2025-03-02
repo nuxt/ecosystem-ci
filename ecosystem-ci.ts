@@ -30,7 +30,7 @@ cli
     if (!options.release) {
       await setupNuxtRepo(options)
       const nightly = await getNuxtNightlyVersion()
-      if (!nightly) {
+      if (!nightly || options.repo === 'nuxt/nuxt') {
         await buildNuxt({ verify: options.verify })
       }
       else {
