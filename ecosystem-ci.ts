@@ -7,6 +7,7 @@ import { cac } from 'cac'
 import {
   bisectNuxt,
   buildNuxt,
+  getNuxtNightlyVersion,
   parseMajorVersion,
   parseNuxtMajor,
   setupEnvironment,
@@ -28,7 +29,13 @@ cli
     let nuxtMajor
     if (!options.release) {
       await setupNuxtRepo(options)
-      await buildNuxt({ verify: options.verify })
+      const nightly = await getNuxtNightlyVersion()
+      if (!nightly) {
+        await buildNuxt({ verify: options.verify })
+      }
+      else {
+        options.nightly = nightly
+      }
       nuxtMajor = parseNuxtMajor(nuxtPath)
     }
     else {
@@ -40,6 +47,7 @@ cli
       nuxtMajor,
       workspace,
       release: options.release,
+      nightly: options.nightly,
       verify: options.verify,
       skipGit: false,
     }
@@ -111,7 +119,13 @@ cli
     const { verify } = options
     const runSuite = async () => {
       try {
-        await buildNuxt({ verify: isFirstRun && verify })
+        const nightly = await getNuxtNightlyVersion()
+        if (!nightly) {
+          await buildNuxt({ verify: isFirstRun && verify })
+        }
+        else {
+          options.nightly = nightly
+        }
         for (const suite of suitesToRun) {
           await run(suite, {
             verify: !!(isFirstRun && verify),

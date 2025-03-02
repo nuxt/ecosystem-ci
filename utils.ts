@@ -6,6 +6,7 @@ import type {
   RunOptions,
   Task,
 } from './types.d.ts'
+import { execSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -120,7 +121,7 @@ export async function setupRepo(options: RepoOptions) {
     options.branch = 'main'
   }
   if (options.shallow == null) {
-    options.shallow = isCI
+    options.shallow = isCI && options.repo !== 'nuxt/nuxt'
   }
 
   let { repo, commit, branch, tag, dir, shallow } = options
@@ -221,6 +222,18 @@ function toCommand(
   }
 }
 
+export async function getNuxtNightlyVersion(): Promise<string | null> {
+  const commit = execSync('git rev-parse --short HEAD', { cwd: nuxtPath }).toString('utf-8').trim().slice(0, 8)
+  try {
+    const { versions } = await $fetch('https://registry.npmjs.org/nuxt-nightly') as { versions: Record<string, any> }
+    return Object.keys(versions).find(v => v.endsWith(`.${commit}`)) ?? null
+  }
+  catch (error) {
+    console.warn(`Failed to get Nuxt nightly version for commit ${commit}:`, error)
+  }
+  return null
+}
+
 export async function runInRepo(options: RunOptions & RepoOptions) {
   if (options.verify == null) {
     options.verify = true
@@ -317,6 +330,14 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       overrides.nuxt = options.release
     }
   }
+  else if (options.nightly) {
+    overrides.nuxt ??= `npm:nuxt-nightly@${options.nightly}`
+    overrides['@nuxt/kit'] ??= `npm:@nuxt/kit-nightly@${options.nightly}`
+    overrides['@nuxt/schema'] ??= `npm:@nuxt/schema-nightly@${options.nightly}`
+    overrides['@nuxt/vite-builder'] ??= `npm:@nuxt/vite-builder-nightly@${options.nightly}`
+    overrides['@nuxt/webpack-builder']
+      ??= `npm:@nuxt/webpack-builder-nightly@${options.nightly}`
+  }
   else {
     // if (pkg.name !== 'nuxi') {
     //   overrides.nuxi ??= `npm:nuxi-nightly`
@@ -324,15 +345,6 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     // if (pkg.name !== '@nuxt/test-utils') {
     //   overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
     // }
-    if (process.env.NITRO_VERSION === 'v3 nightly') {
-      overrides.nitro ??= `npm:nitro-nightly@3x`
-      overrides.nitropack ??= `npm:nitro-nightly@3x`
-      overrides.h3 ??= `npm:h3-nightly@2.0.0-1718872656.6765a6e`
-    }
-    else if (process.env.NITRO_VERSION === 'v2 nightly') {
-      overrides.nitropack ??= `npm:nitropack-nightly@latest`
-      overrides.h3 ??= `npm:h3-nightly@latest`
-    }
 
     overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
     overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
@@ -340,38 +352,52 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     overrides['@nuxt/vite-builder'] ??= `${options.nuxtPath}/packages/vite`
     overrides['@nuxt/webpack-builder']
       ??= `${options.nuxtPath}/packages/webpack`
+  }
 
-    const { resolutions, devDependencies } = JSON.parse(
-      await fs.promises.readFile(
-        path.join(options.nuxtPath, 'package.json'),
-        'utf-8',
-      ),
-    )
+  const { resolutions, devDependencies } = JSON.parse(
+    await fs.promises.readFile(
+      path.join(options.nuxtPath, 'package.json'),
+      'utf-8',
+    ),
+  )
 
-    // lock unhead to the same version as Nuxt's @unhead/vue
-    if (overrides['@unhead/vue'] !== false) {
-      overrides['@unhead/vue'] ||= devDependencies?.['@unhead/vue']
-      overrides.unhead ??= overrides['@unhead/vue']
-    }
+  if (process.env.NITRO_VERSION === 'v3 nightly') {
+    overrides.nitro ??= `npm:nitro-nightly@3x`
+    overrides.nitropack ??= `npm:nitro-nightly@3x`
+    overrides.h3 ??= `npm:h3-nightly@2.0.0-1718872656.6765a6e`
+  }
+  else if (process.env.NITRO_VERSION === 'v2 nightly') {
+    overrides.nitropack ??= `npm:nitropack-nightly@latest`
+    overrides.h3 ??= `npm:h3-nightly@latest`
+  }
+  else {
+    overrides.nitropack ??= devDependencies?.nitropack || resolutions.nitropack
+    overrides.h3 ??= devDependencies?.h3 || resolutions.h3
+  }
 
-    if (overrides['vue-router'] !== false) {
-      overrides['vue-router'] ||= devDependencies?.['vue-router']
-    }
-    const vueResolution
-      = overrides.vue === false ? false : overrides.vue || resolutions?.vue
-    if (vueResolution) {
-      overrides.vue ||= vueResolution
-      overrides['@vue/compiler-sfc'] ||= vueResolution
-      if (vueResolution.match(/^[~^]?3/)) {
-        overrides['@vue/compiler-ssr'] ||= vueResolution
-        overrides['@vue/runtime-dom'] ||= vueResolution
-        overrides['@vue/server-renderer'] ||= vueResolution
-        overrides['@vue/compiler-core'] ||= vueResolution
-        overrides['@vue/reactivity'] ||= vueResolution
-        overrides['@vue/shared'] ||= vueResolution
-        overrides['@vue/compiler-dom'] ||= vueResolution
-        overrides['@vue/runtime-core'] ||= vueResolution
-      }
+  // lock unhead to the same version as Nuxt's @unhead/vue
+  if (overrides['@unhead/vue'] !== false) {
+    overrides['@unhead/vue'] ||= devDependencies?.['@unhead/vue']
+    overrides.unhead ??= overrides['@unhead/vue']
+  }
+
+  if (overrides['vue-router'] !== false) {
+    overrides['vue-router'] ||= devDependencies?.['vue-router']
+  }
+  const vueResolution
+    = overrides.vue === false ? false : overrides.vue || resolutions?.vue
+  if (vueResolution) {
+    overrides.vue ||= vueResolution
+    overrides['@vue/compiler-sfc'] ||= vueResolution
+    if (vueResolution.match(/^[~^]?3/)) {
+      overrides['@vue/compiler-ssr'] ||= vueResolution
+      overrides['@vue/runtime-dom'] ||= vueResolution
+      overrides['@vue/server-renderer'] ||= vueResolution
+      overrides['@vue/compiler-core'] ||= vueResolution
+      overrides['@vue/reactivity'] ||= vueResolution
+      overrides['@vue/shared'] ||= vueResolution
+      overrides['@vue/compiler-dom'] ||= vueResolution
+      overrides['@vue/runtime-core'] ||= vueResolution
     }
   }
   await applyPackageOverrides(dir, pkg, overrides)

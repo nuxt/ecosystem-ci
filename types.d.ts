@@ -17,6 +17,7 @@ export interface RunOptions {
   verify?: boolean
   skipGit?: boolean
   release?: string
+  nightly?: string
   agent?: (typeof AGENTS)[number]
   build?: Task | Task[]
   test?: Task | Task[]
@@ -36,6 +37,7 @@ export interface CommandOptions {
   release?: string
   verify?: boolean
   skipGit?: boolean
+  nightly?: string
 }
 
 export interface RepoOptions {
