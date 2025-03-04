@@ -121,7 +121,7 @@ export async function setupRepo(options: RepoOptions) {
     options.branch = 'main'
   }
   if (options.shallow == null) {
-    options.shallow = isCI && options.repo !== 'nuxt/nuxt'
+    options.shallow = isCI
   }
 
   let { repo, commit, branch, tag, dir, shallow } = options
