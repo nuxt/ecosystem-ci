@@ -376,14 +376,6 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
   }
 
   // lock unhead to the same version as Nuxt's @unhead/vue
-  if (overrides['@unhead/vue'] !== false) {
-    overrides['@unhead/vue'] ||= devDependencies?.['@unhead/vue']
-    overrides.unhead ??= overrides['@unhead/vue']
-  }
-
-  if (overrides['vue-router'] !== false) {
-    overrides['vue-router'] ||= devDependencies?.['vue-router']
-  }
   const vueResolution
     = overrides.vue === false ? false : overrides.vue || resolutions?.vue
   if (vueResolution) {
