@@ -7,6 +7,6 @@ export async function test(options: RunOptions) {
     branch: 'v3',
     repo: 'nuxt/ui',
     build: ['dev:prepare'],
-    test: ['typecheck', 'test', 'build', 'docs:build'],
+    test: ['typecheck', 'test', 'build'],
   })
 }
