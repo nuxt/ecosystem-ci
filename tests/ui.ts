@@ -4,9 +4,9 @@ import { runInRepo } from '../utils.ts'
 export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
-    branch: 'dev',
+    branch: 'v3',
     repo: 'nuxt/ui',
     build: ['dev:prepare'],
-    test: ['typecheck', 'build', 'build:docs'],
+    test: ['typecheck', 'test', 'build', 'build:docs'],
   })
 }
