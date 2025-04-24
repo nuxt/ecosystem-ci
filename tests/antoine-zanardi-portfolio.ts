@@ -8,8 +8,8 @@ export async function test(options: RunOptions) {
     build: ['build'],
     test: [
       'test:unit:cov',
-			'test:cucumber:prepare',
-			'test:cucumber',
+      'test:cucumber:prepare',
+      'test:cucumber',
     ],
   })
 }
