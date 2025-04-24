@@ -5,6 +5,7 @@ export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
     repo: 'antoinezanardi/antoinezanardi.fr',
+    branch: 'master',
     build: ['build'],
     test: [
       'test:unit:cov',
