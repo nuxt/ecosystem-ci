@@ -72,6 +72,7 @@ on:
           - sitemap
           - i18n-module
           - werewolves-assistant
+          - antoine-zanardi-portfolio
           - storybook
 jobs:
   execute-selected-suite:
