@@ -392,6 +392,11 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     }
   }
   await applyPackageOverrides(dir, pkg, overrides)
+  // TODO: temporary workaround for type failures for stricter nuxt v4 options
+  if (options.nuxtMajor === 4) {
+    const nuxtrc = path.join(dir, '.nuxtrc')
+    fs.appendFileSync(nuxtrc, '\ntypescript.tsConfig.compilerOptions.noUncheckedIndexedAccess=false\n', 'utf-8')
+  }
   await beforeBuildCommand?.(pkg.scripts)
   await buildCommand?.(pkg.scripts)
   if (test) {
