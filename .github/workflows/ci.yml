@@ -25,12 +25,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - run: npm i -g --force corepack && corepack enable
+          node-version: lts/*
+      - run: corepack enable
       - run: pnpm --version
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: lts/*
           cache: pnpm
           cache-dependency-path: '**/pnpm-lock.yaml'
       - name: install

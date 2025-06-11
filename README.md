@@ -21,7 +21,6 @@ Workflows are scheduled to run automatically every Monday, Wednesday and Friday
 - run `pnpm i`
 - run `pnpm test` to run all suites
 - or `pnpm test <suitename>` to select a suite
-- or `tsx ecosystem-ci.ts`
 
 You can pass `--tag v3.4.0-beta.1`, `--branch somebranch` or `--commit abcd1234` option to select a specific nuxt version to build.
 If you pass `--release 3.4.1`, Nuxt build will be skipped and Nuxt is fetched from the registry instead
