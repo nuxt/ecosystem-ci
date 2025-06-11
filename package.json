@@ -21,9 +21,9 @@
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
     "typecheck": "tsc",
-    "test:self": "tsx ecosystem-ci.ts _selftest",
-    "test": "node --e ecosystem-ci.ts",
-    "bisect": "tsx ecosystem-ci.ts bisect"
+    "test:self": "pnpm test _selftest",
+    "test": "node --experimental-strip-types --disable-warning=ExperimentalWarning ecosystem-ci.ts",
+    "bisect": "pnpm test bisect"
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
@@ -47,7 +47,6 @@
     "lint-staged": "^15.5.2",
     "semver": "^7.7.2",
     "simple-git-hooks": "^2.13.0",
-    "tsx": "^4.20.1",
     "typescript": "^5.8.3"
   },
   "simple-git-hooks": {
