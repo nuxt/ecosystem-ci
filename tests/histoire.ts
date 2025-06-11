@@ -9,7 +9,7 @@ export async function test(options: RunOptions) {
     test: ['pnpm --filter histoire-example-nuxt3 run ci'],
     overrides: {
       'rollup': 'latest',
-      '@nuxtjs/tailwindcss': 'latest',
+      '@nuxtjs/tailwindcss': '^6.0.0',
       'jiti': 'latest',
     },
   })
