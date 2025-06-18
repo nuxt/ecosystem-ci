@@ -8,6 +8,7 @@ import type {
 } from './types.d.ts'
 import { execSync } from 'node:child_process'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -83,7 +84,7 @@ export async function $(literals: TemplateStringsArray, ...values: any[]) {
 
 export async function setupEnvironment(): Promise<EnvironmentData> {
   const root = dirnameFrom(import.meta.url)
-  const workspace = path.resolve(root, 'workspace')
+  const workspace = isCI ? path.resolve(os.tmpdir(), 'workspace') : path.resolve(root, 'workspace')
   nuxtPath = path.resolve(workspace, 'nuxt')
   cwd = process.cwd()
   env = {
@@ -397,7 +398,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       overrides['@vue/runtime-core'] ||= vueResolution
     }
   }
-  await applyPackageOverrides(dir, pkg, overrides)
+  await applyPackageOverrides(dir, pkg, overrides, options.agent)
   // TODO: temporary workaround for type failures for stricter nuxt v4 options
   if (options.nuxtMajor === 4) {
     const nuxtrc = path.join(dir, '.nuxtrc')
@@ -585,6 +586,7 @@ export async function applyPackageOverrides(
   dir: string,
   pkg: any,
   overrides: Overrides = {},
+  agent?: string,
 ) {
   const useFileProtocol = (v: string) =>
     isLocalOverride(v) ? `file:${path.resolve(v)}` : v
@@ -596,7 +598,7 @@ export async function applyPackageOverrides(
   )
   await $`git clean -fdxq` // remove current install
 
-  const agent = await detect({ cwd: dir, autoInstall: false })
+  agent ||= await detect({ cwd: dir, autoInstall: false })
   if (!agent) {
     throw new Error(`failed to detect packageManager in ${dir}`)
   }
@@ -673,7 +675,7 @@ export async function applyPackageOverrides(
 
   // use of `ni` command here could cause lockfile violation errors so fall back to native commands that avoid these
   if (pm === 'pnpm') {
-    await $`pnpm install --prefer-frozen-lockfile --ignore-workspace --strict-peer-dependencies false`
+    await $`pnpm install --prefer-frozen-lockfile --strict-peer-dependencies false`
   }
   else if (pm === 'yarn') {
     await $`yarn install`
