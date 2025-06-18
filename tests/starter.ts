@@ -6,7 +6,7 @@ export async function test(options: RunOptions) {
     ...options,
     repo: 'nuxt/starter',
     branch: 'v3',
-    build: ['pnpm install', 'build'],
+    build: ['build'],
     test: [],
   })
 }
