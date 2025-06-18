@@ -143,12 +143,15 @@ export async function setupRepo(options: RepoOptions) {
     catch {
       // when not a git repo
     }
+    if (repo === currentClonedRepo) {
+      const isShallow = (await $`git rev-parse --is-shallow-repository`).trim() === 'true'
+      if (isShallow === shallow) {
+        needClone = false
+      }
+    }
     cd(_cwd)
 
-    if (repo === currentClonedRepo) {
-      needClone = false
-    }
-    else {
+    if (needClone) {
       fs.rmSync(dir, { recursive: true, force: true })
     }
   }
@@ -160,6 +163,9 @@ export async function setupRepo(options: RepoOptions) {
   }
   cd(dir)
   await $`git clean -fdxq`
+  if (!needClone && shallow && !commit) {
+    await $`git remote set-branches origin ${branch}`
+  }
   await $`git fetch ${shallow ? '--depth=1 --no-tags' : '--tags'} origin ${
     tag ? `tag ${tag}` : `${commit || branch}`
   }`
