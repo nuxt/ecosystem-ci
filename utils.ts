@@ -312,15 +312,15 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
   }
   const overrides = options.overrides || {}
   const ecosystemPackages = [
-    'ufo',
-    'ofetch',
-    'unstorage',
-    'vite',
+    // 'ufo',
+    // 'ofetch',
+    // 'unstorage',
+    // 'vite',
     'rollup',
-    'consola',
-    'vue-router',
-    '@vitejs/plugin-vue',
-    '@vitejs/plugin-vue-jsx',
+    // 'consola',
+    // 'vue-router',
+    // '@vitejs/plugin-vue',
+    // '@vitejs/plugin-vue-jsx',
   ]
   for (const pkg of ecosystemPackages) {
     overrides[pkg] ??= await $fetch<{ version: string }>(
