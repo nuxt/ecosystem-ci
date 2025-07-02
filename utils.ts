@@ -315,13 +315,17 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     // 'ufo',
     // 'ofetch',
     // 'unstorage',
-    // 'vite',
     'rollup',
     // 'consola',
     // 'vue-router',
-    // '@vitejs/plugin-vue',
-    // '@vitejs/plugin-vue-jsx',
   ]
+  if (parseNuxtMajor(nuxtPath) >= 4) {
+    ecosystemPackages.push(
+      'vite',
+      '@vitejs/plugin-vue',
+      '@vitejs/plugin-vue-jsx',
+    )
+  }
   for (const pkg of ecosystemPackages) {
     overrides[pkg] ??= await $fetch<{ version: string }>(
       `https://registry.npmjs.org/${pkg}/latest`,
