@@ -71,8 +71,8 @@ on:
           - tailwindcss
           - sitemap
           - i18n-module
-          - werewolves-assistant
-          # - antoine-zanardi-portfolio
+          # - werewolves-assistant
+          - antoine-zanardi-portfolio
           - storybook
 jobs:
   execute-selected-suite:
