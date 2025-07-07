@@ -8,9 +8,9 @@ export async function test(options: RunOptions) {
     build: ['build', 'pnpm --filter histoire-example-nuxt3 run story:build'],
     test: ['pnpm --filter histoire-example-nuxt3 run ci'],
     overrides: {
-      'rollup': 'latest',
-      '@nuxtjs/tailwindcss': '^6.0.0',
-      'jiti': 'latest',
+      'vite': false,
+      '@vitejs/plugin-vue': false,
+      '@vitejs/plugin-vue-jsx': false,
     },
   })
 }
