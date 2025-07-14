@@ -25,11 +25,6 @@ on:
           - commit
           - release
         default: branch
-      ref:
-        description: nuxt ref to use
-        required: true
-        type: string
-        default: main
       nitro:
         description: the version of nitro to use
         type: choice
@@ -93,7 +88,7 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
-          --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ matrix.branch || inputs.ref || github.event.client_payload.ref || '3.x' }}
+          --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ matrix.branch || github.event.client_payload.ref || '3.x' }}
           --repo ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           ${{ matrix.suite }}
         id: ecosystem-ci-run
@@ -107,7 +102,7 @@ jobs:
         env:
           WORKFLOW_NAME: ci
           REF_TYPE: ${{ inputs.refType || github.event.client_payload.refType || 'branch' }}
-          REF: ${{ matrix.branch || inputs.ref || github.event.client_payload.ref || '3.x' }}
+          REF: ${{ matrix.branch || github.event.client_payload.ref || '3.x' }}
           REPO: ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           SUITE: ${{ matrix.suite }}
           STATUS: ${{ job.status }}
