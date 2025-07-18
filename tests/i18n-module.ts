@@ -5,7 +5,7 @@ export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
     shallow: false,
-    branch: 'next',
+    branch: 'main',
     beforeTest: 'pnpm playwright-core install chromium',
     repo: 'nuxt-modules/i18n',
     build: ['build'],
