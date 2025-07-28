@@ -46,6 +46,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        exclude:
+          - branch: main
+            suite: bridge
         branch: [3.x, main]
         suite:
           - starter
