@@ -69,7 +69,7 @@ async function run() {
     embeds: [
       {
         title: `${statusConfig[env.STATUS].emoji}  ${env.SUITE}`,
-        description: await createDescription(env.SUITE, targetText),
+        description: await createDescription(env.REF, env.SUITE, targetText),
         color: statusConfig[env.STATUS].color,
       },
     ],
@@ -99,7 +99,7 @@ function assertEnv<T>(
   }
 }
 
-async function createRunUrl(suite: string) {
+async function createRunUrl(ref: string, suite: string) {
   const result = await fetchJobs()
   if (!result) {
     return undefined
@@ -117,7 +117,7 @@ async function createRunUrl(suite: string) {
 
   // when matrix
   const jobM = result.jobs.find(
-    job => job.name === `${process.env.GITHUB_JOB} (${suite})`,
+    job => job.name === `${process.env.GITHUB_JOB} (${ref}, ${suite})`,
   )
   return jobM?.html_url
 }
@@ -154,8 +154,8 @@ async function fetchJobs() {
   }
 }
 
-async function createDescription(suite: string, targetText: string) {
-  const runUrl = await createRunUrl(suite)
+async function createDescription(ref: string, suite: string, targetText: string) {
+  const runUrl = await createRunUrl(ref, suite)
   const open = runUrl === undefined ? 'Null' : `[Open](${runUrl})`
 
   return `
