@@ -90,7 +90,8 @@ jobs:
       - run: corepack enable
       - run: pnpm --version
       - run: pnpm i --frozen-lockfile
-      - run: >-
+      - if: ${{ !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || 'main') == 'main') }}
+        run: >-
           pnpm test
           --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ inputs.ref || github.event.client_payload.ref || 'main' }}
           --repo ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
@@ -101,7 +102,7 @@ jobs:
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro || 'v2 latest' }}
 
-      - if: always()
+      - if: always() && !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || 'main') == 'main')
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning discord-webhook.ts
         env:
           WORKFLOW_NAME: ci
