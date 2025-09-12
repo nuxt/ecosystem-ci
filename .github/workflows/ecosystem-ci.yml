@@ -78,7 +78,7 @@ jobs:
           - sitemap
           - i18n-module
           # - werewolves-assistant
-          # - antoine-zanardi-portfolio
+          - antoine-zanardi-portfolio
           - storybook
       fail-fast: false
     steps:
