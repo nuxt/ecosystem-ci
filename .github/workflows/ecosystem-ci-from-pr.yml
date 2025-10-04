@@ -35,6 +35,10 @@ on:
         required: true
         type: string
         default: nuxt/nuxt
+      commit:
+        description: Specific commit SHA to test (required for security - prevents TOCTOU attacks)
+        required: true
+        type: string
       suite:
         description: test suite to run. runs all test suites when `-`.
         required: false
@@ -117,6 +121,7 @@ jobs:
           pnpm test
           --branch ${{ inputs.branchName }}
           --repo ${{ inputs.repo }}
+          --commit ${{ inputs.commit }}
           ${{ inputs.suite }}
         env:
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
@@ -180,6 +185,7 @@ jobs:
           pnpm test
           --branch ${{ inputs.branchName }}
           --repo ${{ inputs.repo }}
+          --commit ${{ inputs.commit }}
           ${{ matrix.suite }}
         env:
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
