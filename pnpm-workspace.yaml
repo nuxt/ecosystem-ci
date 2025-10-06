@@ -1,2 +1,5 @@
 onlyBuiltDependencies:
   - simple-git-hooks
+
+strictPeerDependencies: false
+packageManagerStrict: false
