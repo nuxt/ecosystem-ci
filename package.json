@@ -2,7 +2,7 @@
   "name": "nuxt-ecosystem-ci",
   "type": "module",
   "version": "0.0.1",
-  "packageManager": "pnpm@10.15.1",
+  "packageManager": "pnpm@10.18.1",
   "description": "Nuxt Ecosystem CI",
   "license": "MIT",
   "homepage": "https://github.com/nuxt/ecosystem-ci#readme",
@@ -34,18 +34,18 @@
     "std-env": "^3.9.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.2.2",
+    "@antfu/eslint-config": "^5.4.1",
     "@antfu/ni": "^23.3.1",
-    "@types/node": "^22.18.1",
+    "@types/node": "^22.18.8",
     "@types/semver": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "eslint": "^9.35.0",
-    "eslint-plugin-n": "^17.21.3",
-    "lint-staged": "^16.1.6",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-n": "^17.23.1",
+    "lint-staged": "^16.2.3",
     "semver": "^7.7.2",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged --concurrent false"
