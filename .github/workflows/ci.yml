@@ -22,13 +22,20 @@ jobs:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
+        id: setup-node
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
       - run: corepack enable
       - run: pnpm --version
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
           cache: pnpm

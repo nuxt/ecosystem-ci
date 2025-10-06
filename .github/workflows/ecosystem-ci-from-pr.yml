@@ -110,10 +110,16 @@ jobs:
     outputs:
       ref: ${{ steps.get-ref.outputs.ref }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
       - run: corepack enable
       - run: pnpm --version
       - run: pnpm i --frozen-lockfile
@@ -174,10 +180,16 @@ jobs:
           - storybook
       fail-fast: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: lts/*
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v2.x
       - run: corepack enable
       - run: pnpm --version
       - run: pnpm i --frozen-lockfile
