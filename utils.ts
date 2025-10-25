@@ -346,6 +346,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     overrides['@nuxt/kit'] ??= `npm:@nuxt/kit-nightly@${options.nightly}`
     overrides['@nuxt/schema'] ??= `npm:@nuxt/schema-nightly@${options.nightly}`
     overrides['@nuxt/vite-builder'] ??= `npm:@nuxt/vite-builder-nightly@${options.nightly}`
+    overrides['@nuxt/nitro-server'] ??= `npm:@nuxt/nitro-server-nightly@${options.nightly}`
     overrides['@nuxt/webpack-builder']
       ??= `npm:@nuxt/webpack-builder-nightly@${options.nightly}`
   }
