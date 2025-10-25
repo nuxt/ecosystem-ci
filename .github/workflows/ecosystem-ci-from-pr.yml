@@ -111,7 +111,8 @@ jobs:
       ref: ${{ steps.get-ref.outputs.ref }}
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - run: corepack enable
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: lts/*
       - uses: oven-sh/setup-bun@v2
@@ -120,8 +121,6 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v2.x
-      - run: corepack enable
-      - run: pnpm --version
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
@@ -181,7 +180,8 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - run: corepack enable
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: lts/*
       - uses: oven-sh/setup-bun@v2
@@ -190,8 +190,6 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v2.x
-      - run: corepack enable
-      - run: pnpm --version
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
