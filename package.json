@@ -2,7 +2,7 @@
   "name": "nuxt-ecosystem-ci",
   "type": "module",
   "version": "0.0.1",
-  "packageManager": "pnpm@10.18.1",
+  "packageManager": "pnpm@10.21.0",
   "description": "Nuxt Ecosystem CI",
   "license": "MIT",
   "homepage": "https://github.com/nuxt/ecosystem-ci#readme",
