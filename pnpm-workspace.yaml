@@ -3,5 +3,4 @@ onlyBuiltDependencies:
 
 strictPeerDependencies: false
 packageManagerStrict: false
-trustPolicy: no-downgrade
 
