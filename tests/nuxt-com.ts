@@ -5,7 +5,7 @@ export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
     repo: 'nuxt/nuxt.com',
-    build: ['pnpm nuxt prepare'],
-    test: ['test'],
+    build: ['pnpm nuxt prepare', 'pnpm exec playwright install'],
+    test: ['test:types', 'pnpm vitest run'],
   })
 }
