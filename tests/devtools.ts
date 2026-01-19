@@ -8,6 +8,7 @@ export async function test(options: RunOptions) {
     build: [],
     test: ['build'],
     overrides: {
+      vite: false,
       esbuild: 'latest',
     },
   })
