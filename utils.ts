@@ -588,6 +588,21 @@ async function overridePackageManagerVersion(
   return false
 }
 
+async function disablePnpmTrustPolicy(dir: string) {
+  const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
+  let content = ''
+  if (fs.existsSync(workspaceFile)) {
+    content = await fs.promises.readFile(workspaceFile, 'utf-8')
+  }
+  if (content.includes('trustPolicy:')) {
+    content = content.replace(/^trustPolicy:.*$/m, 'trustPolicy: off')
+  }
+  else {
+    content = content ? `${content.trimEnd()}\ntrustPolicy: off\n` : `trustPolicy: off\n`
+  }
+  await fs.promises.writeFile(workspaceFile, content, 'utf-8')
+}
+
 export async function applyPackageOverrides(
   dir: string,
   pkg: any,
@@ -651,6 +666,7 @@ export async function applyPackageOverrides(
         ...overrides,
       }
     }
+    await disablePnpmTrustPolicy(dir)
   }
   else if (pm === 'yarn') {
     pkg.resolutions = {
