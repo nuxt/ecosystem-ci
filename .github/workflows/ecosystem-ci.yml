@@ -82,15 +82,15 @@ jobs:
           - storybook
       fail-fast: false
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - run: corepack enable
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version: lts/*
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2
         with:
           bun-version: latest
-      - uses: denoland/setup-deno@v1
+      - uses: denoland/setup-deno@11b63cf76cfcafb4e43f97b6cad24d8e8438f62d # v1
         with:
           deno-version: v2.x
       - run: pnpm i --frozen-lockfile
