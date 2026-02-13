@@ -5,9 +5,10 @@ export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
     overrides: {
-      nitropack: false,
-      h3: false,
-      nitro: false,
+      'nitropack': false,
+      'h3': false,
+      'nitro': false,
+      'vitest-environment-nuxt': false,
     },
     repo: 'nuxt/test-utils',
     build: ['pnpm playwright-core install chromium', 'dev:prepare', 'prepack'],
