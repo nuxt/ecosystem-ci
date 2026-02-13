@@ -89,7 +89,7 @@ jobs:
           bun-version: latest
       - uses: denoland/setup-deno@11b63cf76cfcafb4e43f97b6cad24d8e8438f62d # v1
         with:
-          deno-version: v2.x
+          deno-version: v2.6.8 # pinned due to dev server regression in v2.6.9
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
