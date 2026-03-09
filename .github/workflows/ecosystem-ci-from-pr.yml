@@ -21,7 +21,7 @@ on:
         description: nuxt branch to use
         required: true
         type: string
-        default: main
+        default: 4.x
       nitro:
         description: the version of nitro to use
         type: choice

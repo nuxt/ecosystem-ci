@@ -424,7 +424,7 @@ export async function setupNuxtRepo(options: Partial<RepoOptions>) {
   await setupRepo({
     repo,
     dir: nuxtPath,
-    branch: 'main',
+    branch: '4.x',
     ...options,
   })
 

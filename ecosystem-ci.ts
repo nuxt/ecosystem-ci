@@ -19,7 +19,7 @@ cli
   .command('[...suites]', 'build nuxt and run selected suites')
   .option('--verify', 'verify checkouts by running tests', { default: false })
   .option('--repo <repo>', 'nuxt repository to use', { default: 'nuxt/nuxt' })
-  .option('--branch <branch>', 'nuxt branch to use', { default: 'main' })
+  .option('--branch <branch>', 'nuxt branch to use', { default: '4.x' })
   .option('--tag <tag>', 'nuxt tag to use')
   .option('--commit <commit>', 'nuxt commit sha to use')
   .option('--release <version>', 'nuxt release to use from npm registry')
@@ -62,7 +62,7 @@ cli
     default: false,
   })
   .option('--repo <repo>', 'nuxt repository to use', { default: 'nuxt/nuxt' })
-  .option('--branch <branch>', 'nuxt branch to use', { default: 'main' })
+  .option('--branch <branch>', 'nuxt branch to use', { default: '4.x' })
   .option('--tag <tag>', 'nuxt tag to use')
   .option('--commit <commit>', 'nuxt commit sha to use')
   .action(async (options: CommandOptions) => {
@@ -103,7 +103,7 @@ cli
   .option('--good <ref>', 'last known good ref, e.g. a previous tag. REQUIRED!')
   .option('--verify', 'verify checkouts by running tests', { default: false })
   .option('--repo <repo>', 'nuxt repository to use', { default: 'nuxt/nuxt' })
-  .option('--branch <branch>', 'nuxt branch to use', { default: 'main' })
+  .option('--branch <branch>', 'nuxt branch to use', { default: '4.x' })
   .option('--tag <tag>', 'nuxt tag to use')
   .option('--commit <commit>', 'nuxt commit sha to use')
   .action(async (suites, options: CommandOptions & { good: string }) => {

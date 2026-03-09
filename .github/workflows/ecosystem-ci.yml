@@ -29,7 +29,7 @@ on:
         description: nuxt ref to use
         required: true
         type: string
-        default: main
+        default: 4.x
       nitro:
         description: the version of nitro to use
         type: choice
@@ -94,10 +94,10 @@ jobs:
         with:
           deno-version: v2.6.8 # pinned due to dev server regression in v2.6.9
       - run: pnpm i --frozen-lockfile
-      - if: ${{ !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || 'main') == 'main') }}
+      - if: ${{ !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || '4.x') == '4.x') }}
         run: >-
           pnpm test
-          --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ inputs.ref || github.event.client_payload.ref || 'main' }}
+          --${{ inputs.refType || github.event.client_payload.refType || 'branch' }} ${{ inputs.ref || github.event.client_payload.ref || '4.x' }}
           --repo ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           ${{ matrix.suite }}
         id: ecosystem-ci-run
@@ -106,12 +106,12 @@ jobs:
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro || 'v2 latest' }}
 
-      - if: always() && !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || 'main') == 'main')
+      - if: always() && !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || '4.x') == '4.x')
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning discord-webhook.ts
         env:
           WORKFLOW_NAME: ci
           REF_TYPE: ${{ inputs.refType || github.event.client_payload.refType || 'branch' }}
-          REF: ${{ inputs.ref || github.event.client_payload.ref || 'main' }}
+          REF: ${{ inputs.ref || github.event.client_payload.ref || '4.x' }}
           REPO: ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
           SUITE: ${{ matrix.suite }}
           STATUS: ${{ job.status }}
