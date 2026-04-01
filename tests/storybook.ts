@@ -8,7 +8,8 @@ export async function test(options: RunOptions) {
     build: ['dev:prepare', 'build', 'dev:build', 'example:showcase:build', 'example:showcase:storybook:build'],
     test: ['test'],
     overrides: {
-      vite: false,
+      'vite': false,
+      'pkg-types': false,
     },
   })
 }

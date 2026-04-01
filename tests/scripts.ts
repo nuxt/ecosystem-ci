@@ -10,6 +10,7 @@ export async function test(options: RunOptions) {
     test: ['test', 'build', 'typecheck'],
     overrides: {
       esbuild: 'latest',
+      h3: false,
     },
   })
 }

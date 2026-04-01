@@ -9,6 +9,7 @@ export async function test(options: RunOptions) {
     test: ['test'],
     overrides: {
       esbuild: 'latest',
+      vite: false,
     },
   })
 }
