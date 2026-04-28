@@ -388,6 +388,12 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     overrides.h3 ??= devDependencies?.h3 || resolutions.h3
   }
 
+  const unheadVersion = devDependencies?.['@unhead/vue'] || resolutions?.['@unhead/vue']
+  if (unheadVersion) {
+    overrides['@unhead/vue'] ??= unheadVersion
+    overrides.unhead ??= unheadVersion
+  }
+
   const vueResolution
     = overrides.vue === false ? false : overrides.vue || resolutions?.vue
   if (vueResolution) {
