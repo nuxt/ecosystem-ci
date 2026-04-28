@@ -9,7 +9,7 @@ export async function test(options: RunOptions) {
     test: ['test'],
     overrides: {
       'vite': false,
-      'pkg-types': false,
+      'pkg-types': '^2.3.1',
     },
   })
 }

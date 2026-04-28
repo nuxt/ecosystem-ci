@@ -7,5 +7,8 @@ export async function test(options: RunOptions) {
     repo: 'nuxt/cli',
     build: ['build', 'pnpm nuxt prepare playground'],
     test: ['test:dist', 'test:unit'],
+    overrides: {
+      'pkg-types': '^2.3.1',
+    },
   })
 }
