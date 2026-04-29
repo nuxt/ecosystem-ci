@@ -31,7 +31,8 @@
     "execa": "^9.6.1",
     "node-fetch-native": "^1.6.7",
     "ofetch": "^1.5.1",
-    "std-env": "^3.10.0"
+    "std-env": "^3.10.0",
+    "yaml": "^2.8.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.4.1",

@@ -20,6 +20,7 @@ import { $fetch } from 'ofetch'
 // eslint-disable-next-line node/no-unpublished-import
 import * as semver from 'semver'
 import { isCI } from 'std-env'
+import YAML from 'yaml'
 
 const isGitHubActions = !!process.env.GITHUB_ACTIONS
 
@@ -373,6 +374,9 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       'utf-8',
     ),
   )
+  const nuxtWorkspaceOverrides = readPnpmWorkspaceConfig(options.nuxtPath).overrides
+  const pin = (name: string) =>
+    devDependencies?.[name] || resolutions?.[name] || nuxtWorkspaceOverrides[name]
 
   if (process.env.NITRO_VERSION === 'v3 nightly') {
     overrides.nitro ??= `npm:nitro-nightly@3x`
@@ -384,18 +388,18 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     overrides.h3 ??= `npm:h3-nightly@latest`
   }
   else {
-    overrides.nitropack ??= devDependencies?.nitropack || resolutions.nitropack
-    overrides.h3 ??= devDependencies?.h3 || resolutions.h3
+    overrides.nitropack ??= pin('nitropack')
+    overrides.h3 ??= pin('h3')
   }
 
-  const unheadVersion = devDependencies?.['@unhead/vue'] || resolutions?.['@unhead/vue']
+  const unheadVersion = pin('@unhead/vue')
   if (unheadVersion) {
     overrides['@unhead/vue'] ??= unheadVersion
     overrides.unhead ??= unheadVersion
   }
 
   const vueResolution
-    = overrides.vue === false ? false : overrides.vue || resolutions?.vue
+    = overrides.vue === false ? false : overrides.vue || pin('vue')
   if (vueResolution) {
     overrides.vue ||= vueResolution
     overrides['@vue/compiler-sfc'] ||= vueResolution
@@ -609,6 +613,56 @@ async function disablePnpmTrustPolicy(dir: string) {
   await fs.promises.writeFile(workspaceFile, content, 'utf-8')
 }
 
+function readPnpmWorkspaceConfig(dir: string): {
+  overrides: Record<string, string>
+  patchedDependencies: Record<string, string>
+} {
+  const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
+  if (!fs.existsSync(workspaceFile)) {
+    return { overrides: {}, patchedDependencies: {} }
+  }
+  const parsed = YAML.parse(fs.readFileSync(workspaceFile, 'utf-8')) ?? {}
+  return {
+    overrides: parsed.overrides ?? {},
+    patchedDependencies: parsed.patchedDependencies ?? {},
+  }
+}
+
+async function mirrorOverridesToPnpmWorkspace(
+  dir: string,
+  overrides: Record<string, string>,
+  patchedDependencies: Record<string, string>,
+) {
+  const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
+  if (!fs.existsSync(workspaceFile)) {
+    return
+  }
+  const doc = YAML.parseDocument(await fs.promises.readFile(workspaceFile, 'utf-8'))
+  for (const [name, value] of Object.entries(overrides)) {
+    doc.setIn(['overrides', name], value)
+  }
+  const existingPatches = doc.get('patchedDependencies') as YAML.YAMLMap | undefined
+  if (existingPatches?.items) {
+    for (const item of [...existingPatches.items]) {
+      const key = String((item.key as { value?: unknown })?.value ?? item.key)
+      const bareName = key.includes('@', 1) ? key.slice(0, key.lastIndexOf('@')) : key
+      if (overrides[bareName] || overrides[key]) {
+        doc.deleteIn(['patchedDependencies', key])
+      }
+    }
+  }
+  for (const [name, value] of Object.entries(patchedDependencies)) {
+    if (!doc.hasIn(['patchedDependencies', name])) {
+      doc.setIn(['patchedDependencies', name], value)
+    }
+  }
+  const pd = doc.get('patchedDependencies') as YAML.YAMLMap | undefined
+  if (pd?.items?.length === 0) {
+    doc.delete('patchedDependencies')
+  }
+  await fs.promises.writeFile(workspaceFile, doc.toString(), 'utf-8')
+}
+
 export async function applyPackageOverrides(
   dir: string,
   pkg: any,
@@ -655,16 +709,29 @@ export async function applyPackageOverrides(
     if (pkg.pnpm.patchedDependencies) {
       for (const item of Object.keys(pkg.pnpm.patchedDependencies)) {
         for (const override in overrides) {
-          if (item.startsWith(`${override}@`)) {
+          if (item.startsWith(`${override}@`) || item === override) {
             delete pkg.pnpm.patchedDependencies[item]
           }
         }
       }
     }
+    const workspaceConfig = readPnpmWorkspaceConfig(dir)
     pkg.pnpm.overrides = {
       ...pkg.resolutions,
+      ...workspaceConfig.overrides,
       ...pkg.pnpm.overrides,
       ...overrides,
+    }
+    pkg.pnpm.patchedDependencies = {
+      ...workspaceConfig.patchedDependencies,
+      ...pkg.pnpm.patchedDependencies,
+    }
+    for (const item of Object.keys(pkg.pnpm.patchedDependencies)) {
+      for (const override in overrides) {
+        if (item.startsWith(`${override}@`) || item === override) {
+          delete pkg.pnpm.patchedDependencies[item]
+        }
+      }
     }
     if (pkg.resolutions) {
       pkg.resolutions = {
@@ -672,6 +739,11 @@ export async function applyPackageOverrides(
         ...overrides,
       }
     }
+    await mirrorOverridesToPnpmWorkspace(
+      dir,
+      pkg.pnpm.overrides,
+      pkg.pnpm.patchedDependencies,
+    )
     await disablePnpmTrustPolicy(dir)
   }
   else if (pm === 'yarn') {
