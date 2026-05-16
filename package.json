@@ -26,7 +26,7 @@
     "bisect": "pnpm test bisect"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^3.0.1",
     "cac": "^6.7.14",
     "execa": "^9.6.1",
     "node-fetch-native": "^1.6.7",

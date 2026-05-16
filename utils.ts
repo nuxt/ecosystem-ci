@@ -12,7 +12,7 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
-import actionsCore from '@actions/core'
+import * as actionsCore from '@actions/core'
 // eslint-disable-next-line node/no-unpublished-import
 import { AGENTS, detect, getCommand, serializeCommand } from '@antfu/ni'
 import { execaCommand } from 'execa'
