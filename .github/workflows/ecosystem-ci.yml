@@ -80,6 +80,7 @@ jobs:
           # - werewolves-assistant
           - antoine-zanardi-portfolio
           - storybook
+          - npmx
       fail-fast: false
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
