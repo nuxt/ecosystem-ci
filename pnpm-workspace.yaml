@@ -3,4 +3,6 @@ strictPeerDependencies: false
 engineStrict: true
 
 allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
   simple-git-hooks: true
