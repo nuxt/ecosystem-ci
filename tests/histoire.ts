@@ -8,7 +8,6 @@ export async function test(options: RunOptions) {
     build: ['build', 'pnpm --filter histoire-example-nuxt3 run story:build'],
     test: ['pnpm --filter histoire-example-nuxt3 run ci'],
     overrides: {
-      'vite': false,
       'sass': 'latest',
       'jiti': 'latest',
       '@vitejs/plugin-vue': false,

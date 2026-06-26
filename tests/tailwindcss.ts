@@ -6,7 +6,6 @@ export async function test(options: RunOptions) {
     ...options,
     overrides: {
       vitest: '^3.2.0',
-      vite: false,
     },
     repo: 'nuxt-modules/tailwindcss',
     branch: 'main',
