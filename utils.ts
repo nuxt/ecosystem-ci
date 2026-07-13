@@ -598,19 +598,17 @@ async function overridePackageManagerVersion(
   return false
 }
 
-async function disablePnpmTrustPolicy(dir: string) {
+async function relaxPnpmInstallPolicy(dir: string) {
   const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
-  let content = ''
-  if (fs.existsSync(workspaceFile)) {
-    content = await fs.promises.readFile(workspaceFile, 'utf-8')
-  }
-  if (content.includes('trustPolicy:')) {
-    content = content.replace(/^trustPolicy:.*$/m, 'trustPolicy: off')
-  }
-  else {
-    content = content ? `${content.trimEnd()}\ntrustPolicy: off\n` : `trustPolicy: off\n`
-  }
-  await fs.promises.writeFile(workspaceFile, content, 'utf-8')
+  const doc = fs.existsSync(workspaceFile)
+    ? YAML.parseDocument(await fs.promises.readFile(workspaceFile, 'utf-8'))
+    : new YAML.Document({})
+  doc.set('trustPolicy', 'off')
+  // pnpm >=10 blocks dependency build scripts by default and fails the install
+  // with ERR_PNPM_IGNORED_BUILDS. We install whatever the tested project needs,
+  // so allow all builds rather than curate onlyBuiltDependencies per repo.
+  doc.set('dangerouslyAllowAllBuilds', true)
+  await fs.promises.writeFile(workspaceFile, doc.toString(), 'utf-8')
 }
 
 function readPnpmWorkspaceConfig(dir: string): {
@@ -744,7 +742,7 @@ export async function applyPackageOverrides(
       pkg.pnpm.overrides,
       pkg.pnpm.patchedDependencies,
     )
-    await disablePnpmTrustPolicy(dir)
+    await relaxPnpmInstallPolicy(dir)
   }
   else if (pm === 'yarn') {
     pkg.resolutions = {
