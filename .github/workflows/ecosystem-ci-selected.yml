@@ -74,6 +74,7 @@ on:
           # - werewolves-assistant
           - antoine-zanardi-portfolio
           - storybook
+          - npmx
 jobs:
   execute-selected-suite:
     timeout-minutes: 30
