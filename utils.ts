@@ -359,13 +359,17 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     //   overrides['@nuxt/test-utils'] ??= `npm:@nuxt/test-utils-nightly`
     // }
 
-    overrides.nuxt ??= `${options.nuxtPath}/packages/nuxt`
-    overrides['@nuxt/kit'] ??= `${options.nuxtPath}/packages/kit`
-    overrides['@nuxt/schema'] ??= `${options.nuxtPath}/packages/schema`
-    overrides['@nuxt/vite-builder'] ??= `${options.nuxtPath}/packages/vite`
-    overrides['@nuxt/nitro-server'] ??= `${options.nuxtPath}/packages/nitro-server`
-    overrides['@nuxt/webpack-builder']
-      ??= `${options.nuxtPath}/packages/webpack`
+    const packed = await packNuxtPackages(options.nuxtPath, {
+      'nuxt': 'packages/nuxt',
+      '@nuxt/kit': 'packages/kit',
+      '@nuxt/schema': 'packages/schema',
+      '@nuxt/vite-builder': 'packages/vite',
+      '@nuxt/nitro-server': 'packages/nitro-server',
+      '@nuxt/webpack-builder': 'packages/webpack',
+    })
+    for (const [name, tarball] of Object.entries(packed)) {
+      overrides[name] ??= `file:${tarball}`
+    }
   }
 
   const { resolutions, devDependencies } = JSON.parse(
@@ -785,6 +789,48 @@ export async function applyPackageOverrides(
 
 export function dirnameFrom(url: string) {
   return path.dirname(fileURLToPath(url))
+}
+
+/**
+ * Pack local Nuxt packages with `pnpm pack` so their `publishConfig` (dist
+ * entrypoints) and `files` field are applied exactly as at publish time.
+ *
+ * @param nuxtRoot absolute path to the nuxt monorepo checkout
+ * @param packages map of package name to its dir relative to `nuxtRoot`
+ * @returns map of package name to the absolute path of its `.tgz` tarball
+ */
+async function packNuxtPackages(
+  nuxtRoot: string,
+  packages: Record<string, string>,
+): Promise<Record<string, string>> {
+  const destination = path.join(nuxtRoot, '.ecosystem-ci-pack')
+  await fs.promises.rm(destination, { recursive: true, force: true })
+  await fs.promises.mkdir(destination, { recursive: true })
+
+  const previousCwd = cwd
+  const tarballs: Record<string, string> = {}
+  try {
+    for (const [name, relativeDir] of Object.entries(packages)) {
+      const packageDir = path.join(nuxtRoot, relativeDir)
+      cd(packageDir)
+      const stdout = await $`pnpm pack --pack-destination ${destination}`
+      const printed = stdout
+        .split('\n')
+        .map(line => line.trim())
+        .filter(Boolean)
+        .at(-1)
+      if (!printed) {
+        throw new Error(`pnpm pack produced no tarball for ${name}`)
+      }
+      tarballs[name] = path.isAbsolute(printed)
+        ? printed
+        : path.join(destination, path.basename(printed))
+    }
+  }
+  finally {
+    cwd = previousCwd
+  }
+  return tarballs
 }
 
 export function parseNuxtMajor(nuxtPath: string): number {
