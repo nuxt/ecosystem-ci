@@ -612,6 +612,8 @@ async function relaxPnpmInstallPolicy(dir: string) {
   // with ERR_PNPM_IGNORED_BUILDS. We install whatever the tested project needs,
   // so allow all builds rather than curate onlyBuiltDependencies per repo.
   doc.set('dangerouslyAllowAllBuilds', true)
+  doc.delete('onlyBuiltDependencies')
+  doc.delete('neverBuiltDependencies')
   await fs.promises.writeFile(workspaceFile, doc.toString(), 'utf-8')
 }
 
@@ -741,6 +743,8 @@ export async function applyPackageOverrides(
         ...overrides,
       }
     }
+    delete pkg.pnpm.onlyBuiltDependencies
+    delete pkg.pnpm.neverBuiltDependencies
     await mirrorOverridesToPnpmWorkspace(
       dir,
       pkg.pnpm.overrides,
