@@ -23,6 +23,14 @@ cli
   .option('--tag <tag>', 'nuxt tag to use')
   .option('--commit <commit>', 'nuxt commit sha to use')
   .option('--release <version>', 'nuxt release to use from npm registry')
+  .option(
+    '--nitro-ref <ref>',
+    'build nitro from source at this nitrojs/nitro branch or commit',
+  )
+  .option(
+    '--h3-ref <ref>',
+    'build h3 from source at this h3js/h3 branch or commit',
+  )
   .action(async (suites, options: CommandOptions) => {
     const { root, nuxtPath, workspace } = await setupEnvironment()
     const suitesToRun = getSuitesToRun(suites, root)
@@ -48,6 +56,8 @@ cli
       workspace,
       release: options.release,
       nightly: options.nightly,
+      nitroRef: options.nitroRef,
+      h3Ref: options.h3Ref,
       verify: options.verify,
       skipGit: false,
     }
@@ -80,6 +90,14 @@ cli
   )
   .option('--repo <repo>', 'nuxt repository to use', { default: 'nuxt/nuxt' })
   .option('--release <version>', 'nuxt release to use from npm registry')
+  .option(
+    '--nitro-ref <ref>',
+    'build nitro from source at this nitrojs/nitro branch or commit',
+  )
+  .option(
+    '--h3-ref <ref>',
+    'build h3 from source at this h3js/h3 branch or commit',
+  )
   .action(async (suites, options: CommandOptions) => {
     const { root, nuxtPath, workspace } = await setupEnvironment()
     const suitesToRun = getSuitesToRun(suites, root)
