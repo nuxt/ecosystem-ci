@@ -101,11 +101,14 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
-          --${{ inputs.refType }} ${{ inputs.ref }}
-          --repo ${{ inputs.repo }}
-          ${{ inputs.suite }}
+          "--$REF_TYPE" "$REF"
+          --repo "$REPO"
+          "${{ inputs.suite }}"
         id: ecosystem-ci-run
         env:
+          REF_TYPE: ${{ inputs.refType }}
+          REF: ${{ inputs.ref }}
+          REPO: ${{ inputs.repo }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro }}

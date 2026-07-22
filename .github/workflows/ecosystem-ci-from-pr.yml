@@ -134,11 +134,14 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
-          --branch ${{ inputs.branchName }}
-          --repo ${{ inputs.repo }}
-          --commit ${{ inputs.commit }}
-          ${{ inputs.suite }}
+          --branch "$BRANCH_NAME"
+          --repo "$REPO"
+          --commit "$COMMIT"
+          "${{ inputs.suite }}"
         env:
+          BRANCH_NAME: ${{ inputs.branchName }}
+          REPO: ${{ inputs.repo }}
+          COMMIT: ${{ inputs.commit }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro }}
@@ -208,11 +211,14 @@ jobs:
       - run: pnpm i --frozen-lockfile
       - run: >-
           pnpm test
-          --branch ${{ inputs.branchName }}
-          --repo ${{ inputs.repo }}
-          --commit ${{ inputs.commit }}
-          ${{ matrix.suite }}
+          --branch "$BRANCH_NAME"
+          --repo "$REPO"
+          --commit "$COMMIT"
+          "${{ matrix.suite }}"
         env:
+          BRANCH_NAME: ${{ inputs.branchName }}
+          REPO: ${{ inputs.repo }}
+          COMMIT: ${{ inputs.commit }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
       - id: get-ref
@@ -238,11 +244,15 @@ jobs:
             ecosystem-ci
           permission-pull-requests: write # to update the comment on the nuxt PR
       - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          EXECUTE_ALL_REF: ${{ needs.execute-all.outputs.ref }}
+          EXECUTE_SELECTED_REF: ${{ needs.execute-selected-suite.outputs.ref }}
+          COMMENT_ID: ${{ needs.init.outputs.comment-id }}
         with:
           github-token: ${{ steps.generate-token.outputs.token }}
           script: |
             const mainRepoName = 'nuxt'
-            const ref = "${{ needs.execute-all.outputs.ref }}" || "${{ needs.execute-selected-suite.outputs.ref }}"
+            const ref = process.env.EXECUTE_ALL_REF || process.env.EXECUTE_SELECTED_REF
             const refLink = `[\`${ref.slice(0, 7)}\`](${context.serverUrl}/${context.repo.owner}/${mainRepoName}/pull/${context.payload.inputs.prNumber}/commits/${ref})`
 
             const { data: { jobs } } = await github.rest.actions.listJobsForWorkflowRun({
@@ -338,12 +348,12 @@ jobs:
               issue_number: context.payload.inputs.prNumber,
               owner: context.repo.owner,
               repo: mainRepoName,
-              comment_id: ${{ needs.init.outputs.comment-id }},
+              comment_id: Number(process.env.COMMENT_ID),
               body
             })
 
             await github.rest.issues.deleteComment({
               owner: context.repo.owner,
               repo: mainRepoName,
-              comment_id: ${{ needs.init.outputs.comment-id }}
+              comment_id: Number(process.env.COMMENT_ID)
             })
