@@ -38,6 +38,16 @@ on:
           - v2 nightly
           - v2 latest
         default: v2 latest
+      nitroRef:
+        description: nitro branch/commit to build from source (overrides the published-nightly "nitro" option)
+        required: false
+        type: string
+        default: ''
+      h3Ref:
+        description: h3 branch/commit to build from source
+        required: false
+        type: string
+        default: ''
       repo:
         description: nuxt repository to use
         required: true
@@ -107,12 +117,16 @@ jobs:
           pnpm test
           "--$REF_TYPE" "$REF"
           --repo "$REPO"
+          $(if [ -n "$NITRO_REF" ]; then echo "--nitro-ref $NITRO_REF"; fi)
+          $(if [ -n "$H3_REF" ]; then echo "--h3-ref $H3_REF"; fi)
           "${{ matrix.suite }}"
         id: ecosystem-ci-run
         env:
           REF_TYPE: ${{ inputs.refType || github.event.client_payload.refType || 'branch' }}
           REF: ${{ inputs.ref || github.event.client_payload.ref || '4.x' }}
           REPO: ${{ inputs.repo || github.event.client_payload.repo || 'nuxt/nuxt' }}
+          NITRO_REF: ${{ inputs.nitroRef || '' }}
+          H3_REF: ${{ inputs.h3Ref || '' }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro || 'v2 latest' }}

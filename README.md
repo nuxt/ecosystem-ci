@@ -25,6 +25,8 @@ Workflows are scheduled to run automatically every Monday, Wednesday and Friday
 You can pass `--tag v3.4.0-beta.1`, `--branch somebranch` or `--commit abcd1234` option to select a specific nuxt version to build.
 If you pass `--release 3.4.1`, Nuxt build will be skipped and Nuxt is fetched from the registry instead
 
+You can also test against a specific nitro or h3 ref with `--nitro-ref <ref>` / `--h3-ref <ref>`, e.g. `pnpm test --nitro-ref main <suitename>`. This builds the companion repo from that branch/commit and injects its packages across the dependency tree. It differs from the `nitro` workflow input (or the `NITRO_VERSION` env var), which selects a published nightly; if both are set, the ref wins.
+
 The repositories are checked out into `workspace` subdirectory as shallow clones
 
 ## via comment on PR

@@ -30,6 +30,16 @@ on:
           - v2 nightly
           - v2 latest
         default: v2 latest
+      nitroRef:
+        description: nitro branch/commit to build from source (overrides the published-nightly "nitro" option)
+        required: false
+        type: string
+        default: ''
+      h3Ref:
+        description: h3 branch/commit to build from source
+        required: false
+        type: string
+        default: ''
       repo:
         description: nuxt repository to use
         required: true
@@ -137,11 +147,15 @@ jobs:
           --branch "$BRANCH_NAME"
           --repo "$REPO"
           --commit "$COMMIT"
+          $(if [ -n "$NITRO_REF" ]; then echo "--nitro-ref $NITRO_REF"; fi)
+          $(if [ -n "$H3_REF" ]; then echo "--h3-ref $H3_REF"; fi)
           "${{ inputs.suite }}"
         env:
           BRANCH_NAME: ${{ inputs.branchName }}
           REPO: ${{ inputs.repo }}
           COMMIT: ${{ inputs.commit }}
+          NITRO_REF: ${{ inputs.nitroRef }}
+          H3_REF: ${{ inputs.h3Ref }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro }}
@@ -214,11 +228,15 @@ jobs:
           --branch "$BRANCH_NAME"
           --repo "$REPO"
           --commit "$COMMIT"
+          $(if [ -n "$NITRO_REF" ]; then echo "--nitro-ref $NITRO_REF"; fi)
+          $(if [ -n "$H3_REF" ]; then echo "--h3-ref $H3_REF"; fi)
           "${{ matrix.suite }}"
         env:
           BRANCH_NAME: ${{ inputs.branchName }}
           REPO: ${{ inputs.repo }}
           COMMIT: ${{ inputs.commit }}
+          NITRO_REF: ${{ inputs.nitroRef }}
+          H3_REF: ${{ inputs.h3Ref }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
       - id: get-ref
