@@ -378,9 +378,30 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       'utf-8',
     ),
   )
-  const nuxtWorkspaceOverrides = readPnpmWorkspaceConfig(options.nuxtPath).overrides
+  const nuxtWorkspaceConfig = readPnpmWorkspaceConfig(options.nuxtPath)
+  const resolveCatalogRef = (name: string, value?: string) => {
+    if (!value?.startsWith('catalog:')) {
+      return value
+    }
+    const catalogName = value.slice('catalog:'.length) || 'default'
+    const catalog = catalogName === 'default'
+      ? nuxtWorkspaceConfig.catalog
+      : nuxtWorkspaceConfig.catalogs[catalogName]
+    const resolved = catalog?.[name]
+    if (!resolved) {
+      throw new Error(
+        `could not resolve ${value} for ${name} from nuxt pnpm-workspace.yaml catalogs`,
+      )
+    }
+    return resolved
+  }
   const pin = (name: string) =>
-    devDependencies?.[name] || resolutions?.[name] || nuxtWorkspaceOverrides[name]
+    resolveCatalogRef(
+      name,
+      devDependencies?.[name]
+      || resolutions?.[name]
+      || nuxtWorkspaceConfig.overrides[name],
+    )
 
   if (process.env.NITRO_VERSION === 'v3 nightly') {
     overrides.nitro ??= `npm:nitro-nightly@3x`
@@ -392,8 +413,14 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     overrides.h3 ??= `npm:h3-nightly@latest`
   }
   else {
-    overrides.nitropack ??= pin('nitropack')
-    overrides.h3 ??= pin('h3')
+    const nitropackVersion = pin('nitropack')
+    if (nitropackVersion) {
+      overrides.nitropack ??= nitropackVersion
+    }
+    const h3Version = pin('h3')
+    if (h3Version) {
+      overrides.h3 ??= h3Version
+    }
   }
 
   const unheadVersion = pin('@unhead/vue')
@@ -407,7 +434,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
   if (vueResolution) {
     overrides.vue ||= vueResolution
     overrides['@vue/compiler-sfc'] ||= vueResolution
-    if (vueResolution.match(/^[~^]?3/)) {
+    if (typeof vueResolution === 'string' && vueResolution.match(/^[~^]?3/)) {
       overrides['@vue/compiler-ssr'] ||= vueResolution
       overrides['@vue/runtime-dom'] ||= vueResolution
       overrides['@vue/server-renderer'] ||= vueResolution
@@ -620,15 +647,19 @@ async function relaxPnpmInstallPolicy(dir: string) {
 function readPnpmWorkspaceConfig(dir: string): {
   overrides: Record<string, string>
   patchedDependencies: Record<string, string>
+  catalog: Record<string, string>
+  catalogs: Record<string, Record<string, string>>
 } {
   const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
   if (!fs.existsSync(workspaceFile)) {
-    return { overrides: {}, patchedDependencies: {} }
+    return { overrides: {}, patchedDependencies: {}, catalog: {}, catalogs: {} }
   }
   const parsed = YAML.parse(fs.readFileSync(workspaceFile, 'utf-8')) ?? {}
   return {
     overrides: parsed.overrides ?? {},
     patchedDependencies: parsed.patchedDependencies ?? {},
+    catalog: parsed.catalog ?? {},
+    catalogs: parsed.catalogs ?? {},
   }
 }
 
