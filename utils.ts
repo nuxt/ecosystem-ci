@@ -892,11 +892,19 @@ async function buildOverrides(
 
   const needsOverride = (p: string) =>
     repoOverrides[p] === true || (deps.has(p) && repoOverrides[p] == null)
-  const buildsToRun = buildDefinitions.filter(
-    ({ packages, enabled }) =>
-      (enabled?.(options) ?? true)
-      && Object.keys(packages).some(needsOverride),
-  )
+  // a build explicitly enabled via its ref option injects its packages
+  // unconditionally (pnpm overrides apply to transitive deps too), unless the
+  // suite opts out with `overrides: { '<pkg>': false }`
+  const buildsToRun = buildDefinitions
+    .map(buildDef => ({
+      ...buildDef,
+      force: buildDef.enabled?.(options) === true,
+    }))
+    .filter(
+      ({ packages, enabled, force }) =>
+        (enabled?.(options) ?? true)
+        && (force || Object.keys(packages).some(needsOverride)),
+    )
   const overrides: Overrides = {}
   for (const buildDef of buildsToRun) {
     const { dir } = await buildDef.build({
@@ -912,7 +920,11 @@ async function buildOverrides(
       // do not pass along scripts
     })
     for (const [name, packageDir] of Object.entries(buildDef.packages)) {
-      if (needsOverride(name)) {
+      if (
+        buildDef.force
+          ? repoOverrides[name] !== false
+          : needsOverride(name)
+      ) {
         overrides[name] = `${dir}/${packageDir}`
       }
     }
