@@ -11,7 +11,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import * as actionsCore from '@actions/core'
 // eslint-disable-next-line node/no-unpublished-import
 import { AGENTS, detect, getCommand, serializeCommand } from '@antfu/ni'
@@ -370,6 +370,12 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     for (const [name, tarball] of Object.entries(packed)) {
       overrides[name] ??= `file:${tarball}`
     }
+  }
+
+  if (!options.release) {
+    const localOverrides = await buildOverrides(pkg, options, overrides)
+    cd(dir) // buildOverrides changed dir, change it back
+    Object.assign(overrides, localOverrides)
   }
 
   const { resolutions, devDependencies } = JSON.parse(
@@ -852,6 +858,66 @@ async function packLocalOverride(packageDir: string): Promise<string> {
   )
   const filename = JSON.parse(stdout)[0].filename
   return path.join(destDir, filename)
+}
+
+/**
+ * Build companion repos from source via `builds/*.ts` definitions and return
+ * `file:`-style overrides for their published packages.
+ *
+ * A build definition runs when its optional `enabled(options)` export returns
+ * true (e.g. a `--nitro-ref` was given) and the suite either depends on one of
+ * its packages or explicitly opts in with `overrides: { '<pkg>': true }`.
+ */
+async function buildOverrides(
+  pkg: any,
+  options: RunOptions,
+  repoOverrides: Overrides,
+) {
+  const { root } = options
+  const buildsPath = path.join(root, 'builds')
+  const buildFiles: string[] = fs
+    .readdirSync(buildsPath)
+    .filter((f: string) => !f.startsWith('_') && f.endsWith('.ts'))
+    .map(f => path.join(buildsPath, f))
+  const buildDefinitions: {
+    packages: { [key: string]: string }
+    build: (options: RunOptions) => Promise<{ dir: string }>
+    enabled?: (options: RunOptions) => boolean
+  }[] = await Promise.all(buildFiles.map(f => import(pathToFileURL(f).href)))
+  const deps = new Set([
+    ...Object.keys(pkg.dependencies ?? {}),
+    ...Object.keys(pkg.devDependencies ?? {}),
+    ...Object.keys(pkg.peerDependencies ?? {}),
+  ])
+
+  const needsOverride = (p: string) =>
+    repoOverrides[p] === true || (deps.has(p) && repoOverrides[p] == null)
+  const buildsToRun = buildDefinitions.filter(
+    ({ packages, enabled }) =>
+      (enabled?.(options) ?? true)
+      && Object.keys(packages).some(needsOverride),
+  )
+  const overrides: Overrides = {}
+  for (const buildDef of buildsToRun) {
+    const { dir } = await buildDef.build({
+      root: options.root,
+      workspace: options.workspace,
+      nuxtPath: options.nuxtPath,
+      nuxtMajor: options.nuxtMajor,
+      skipGit: options.skipGit,
+      release: options.release,
+      verify: options.verify,
+      nitroRef: options.nitroRef,
+      h3Ref: options.h3Ref,
+      // do not pass along scripts
+    })
+    for (const [name, packageDir] of Object.entries(buildDef.packages)) {
+      if (needsOverride(name)) {
+        overrides[name] = `${dir}/${packageDir}`
+      }
+    }
+  }
+  return overrides
 }
 
 export function dirnameFrom(url: string) {

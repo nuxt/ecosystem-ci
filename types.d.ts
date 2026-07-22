@@ -18,6 +18,8 @@ export interface RunOptions {
   skipGit?: boolean
   release?: string
   nightly?: string
+  nitroRef?: string
+  h3Ref?: string
   agent?: (typeof AGENTS)[number]
   build?: Task | Task[]
   test?: Task | Task[]
@@ -38,6 +40,8 @@ export interface CommandOptions {
   verify?: boolean
   skipGit?: boolean
   nightly?: string
+  nitroRef?: string
+  h3Ref?: string
 }
 
 export interface RepoOptions {
