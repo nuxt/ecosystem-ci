@@ -641,6 +641,11 @@ async function relaxPnpmInstallPolicy(dir: string) {
   doc.set('dangerouslyAllowAllBuilds', true)
   doc.delete('onlyBuiltDependencies')
   doc.delete('neverBuiltDependencies')
+  // Our overrides pull in freshly-published versions and file: tarballs that
+  // pnpm's install gates would otherwise reject, so disable them outright.
+  doc.set('minimumReleaseAge', 0)
+  doc.set('blockExoticSubdeps', false)
+  doc.set('strictDepBuilds', false)
   await fs.promises.writeFile(workspaceFile, doc.toString(), 'utf-8')
 }
 
@@ -784,9 +789,19 @@ export async function applyPackageOverrides(
     await relaxPnpmInstallPolicy(dir)
   }
   else if (pm === 'yarn') {
+    // Yarn's `file:` protocol copies the referenced directory verbatim,
+    // ignoring the package's `files` field, which can drag src/fixtures into
+    // the install and break it. Pack local overrides into tarballs instead.
+    const yarnOverrides: Record<string, string> = {}
+    for (const [name, value] of Object.entries(overrides)) {
+      yarnOverrides[name]
+        = typeof value === 'string' && value.startsWith('file:')
+          ? `file:${await packLocalOverride(value.slice('file:'.length))}`
+          : (value as string)
+    }
     pkg.resolutions = {
       ...pkg.resolutions,
-      ...overrides,
+      ...yarnOverrides,
     }
   }
   else if (pm === 'npm') {
@@ -820,6 +835,23 @@ export async function applyPackageOverrides(
   else if (pm === 'npm') {
     await $`npm install`
   }
+}
+
+/**
+ * Pack a local package directory into a tarball (honouring its `files` field)
+ * and return the tarball path. `--ignore-scripts` skips lifecycle scripts
+ * since the package is already built.
+ */
+async function packLocalOverride(packageDir: string): Promise<string> {
+  const destDir = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'nuxt-ecosystem-ci-pack-'),
+  )
+  const { stdout } = await execaCommand(
+    `npm pack --json --ignore-scripts --pack-destination ${destDir}`,
+    { cwd: packageDir, env },
+  )
+  const filename = JSON.parse(stdout)[0].filename
+  return path.join(destDir, filename)
 }
 
 export function dirnameFrom(url: string) {
