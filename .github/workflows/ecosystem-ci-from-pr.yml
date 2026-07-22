@@ -237,6 +237,7 @@ jobs:
           COMMIT: ${{ inputs.commit }}
           NITRO_REF: ${{ inputs.nitroRef }}
           H3_REF: ${{ inputs.h3Ref }}
+          NITRO_VERSION: ${{ inputs.nitro }}
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
       - id: get-ref
