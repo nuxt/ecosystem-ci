@@ -14,10 +14,12 @@ export interface RunOptions {
   root: string
   nuxtPath: string
   nuxtMajor: number
+  repo?: string
   verify?: boolean
   skipGit?: boolean
   release?: string
   nightly?: string
+  prNew?: string
   nitroRef?: string
   h3Ref?: string
   agent?: (typeof AGENTS)[number]
@@ -40,6 +42,7 @@ export interface CommandOptions {
   verify?: boolean
   skipGit?: boolean
   nightly?: string
+  prNew?: string
   nitroRef?: string
   h3Ref?: string
 }

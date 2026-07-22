@@ -10,6 +10,7 @@ import {
   getNuxtNightlyVersion,
   parseMajorVersion,
   parseNuxtMajor,
+  resolvePkgPrNew,
   setupEnvironment,
   setupNuxtRepo,
 } from './utils.ts'
@@ -35,27 +36,36 @@ cli
     const { root, nuxtPath, workspace } = await setupEnvironment()
     const suitesToRun = getSuitesToRun(suites, root)
     let nuxtMajor
-    if (!options.release) {
-      await setupNuxtRepo(options)
-      const nightly = await getNuxtNightlyVersion()
-      if (!nightly || options.repo === 'nuxt/nuxt') {
-        await buildNuxt({ verify: options.verify })
-      }
-      else {
-        options.nightly = nightly
-      }
-      nuxtMajor = parseNuxtMajor(nuxtPath)
+    if (options.release) {
+      nuxtMajor = parseMajorVersion(options.release)
     }
     else {
-      nuxtMajor = parseMajorVersion(options.release)
+      const prNew = options.tag ? null : await resolvePkgPrNew(options)
+      if (prNew) {
+        options.prNew = prNew.sha
+        nuxtMajor = prNew.nuxtMajor
+      }
+      else {
+        await setupNuxtRepo(options)
+        const nightly = await getNuxtNightlyVersion()
+        if (!nightly || options.repo === 'nuxt/nuxt') {
+          await buildNuxt({ verify: options.verify })
+        }
+        else {
+          options.nightly = nightly
+        }
+        nuxtMajor = parseNuxtMajor(nuxtPath)
+      }
     }
     const runOptions: RunOptions = {
       root,
       nuxtPath,
       nuxtMajor,
       workspace,
+      repo: options.repo,
       release: options.release,
       nightly: options.nightly,
+      prNew: options.prNew,
       nitroRef: options.nitroRef,
       h3Ref: options.h3Ref,
       verify: options.verify,
@@ -89,6 +99,8 @@ cli
     { default: false },
   )
   .option('--repo <repo>', 'nuxt repository to use', { default: 'nuxt/nuxt' })
+  .option('--branch <branch>', 'nuxt branch to use', { default: '4.x' })
+  .option('--commit <commit>', 'nuxt commit sha to use')
   .option('--release <version>', 'nuxt release to use from npm registry')
   .option(
     '--nitro-ref <ref>',
@@ -101,11 +113,22 @@ cli
   .action(async (suites, options: CommandOptions) => {
     const { root, nuxtPath, workspace } = await setupEnvironment()
     const suitesToRun = getSuitesToRun(suites, root)
+    let nuxtMajor
+    if (!options.release) {
+      const prNew = await resolvePkgPrNew(options)
+      if (prNew) {
+        options.prNew = prNew.sha
+        nuxtMajor = prNew.nuxtMajor
+      }
+    }
+    nuxtMajor ??= options.release
+      ? parseMajorVersion(options.release)
+      : parseNuxtMajor(nuxtPath)
     const runOptions: RunOptions = {
       ...options,
       root,
       nuxtPath,
-      nuxtMajor: parseNuxtMajor(nuxtPath),
+      nuxtMajor,
       workspace,
     }
     for (const suite of suitesToRun) {

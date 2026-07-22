@@ -1,4 +1,5 @@
 import type {
+  CommandOptions,
   EnvironmentData,
   Overrides,
   ProcessEnv,
@@ -230,6 +231,98 @@ function toCommand(
   }
 }
 
+const PKG_PR_NEW_BASE = 'https://pkg.pr.new'
+
+// nuxt publishes a continuous release for every commit and PR head to
+// pkg.pr.new (in compact mode, so clean `<pkg>@<sha>` urls resolve). These are
+// the packages published from the nuxt/nuxt monorepo.
+const PKG_PR_NEW_PACKAGES = [
+  'nuxt',
+  '@nuxt/kit',
+  '@nuxt/nitro-server',
+  '@nuxt/schema',
+  '@nuxt/vite-builder',
+  '@nuxt/webpack-builder',
+  '@nuxt/rspack-builder',
+]
+
+/**
+ * Resolve the commit sha a build-from-source run targets without cloning: an
+ * explicit `--commit` wins, otherwise the current HEAD of `--branch` is looked
+ * up via the GitHub API (falling back to `git ls-remote`). Returns null when
+ * neither is available.
+ */
+async function resolveCommitSha(options: CommandOptions): Promise<string | null> {
+  if (options.commit) {
+    return options.commit
+  }
+  const repo = options.repo || 'nuxt/nuxt'
+  const branch = options.branch || '4.x'
+  try {
+    const { stdout } = await execaCommand(
+      `gh api repos/${repo}/commits/${branch} --jq .sha`,
+      { env },
+    )
+    const sha = stdout.trim()
+    if (sha) {
+      return sha
+    }
+  }
+  catch {
+    // gh unavailable or unauthenticated, fall back to git ls-remote
+  }
+  try {
+    const url = repo.includes(':') ? repo : `https://github.com/${repo}.git`
+    const { stdout } = await execaCommand(`git ls-remote ${url} ${branch}`, { env })
+    const sha = stdout.split(/\s/, 1)[0]?.trim()
+    if (sha) {
+      return sha
+    }
+  }
+  catch {
+    // network or ref resolution failure
+  }
+  return null
+}
+
+/**
+ * Probe pkg.pr.new for a continuous release matching the resolved commit and,
+ * if present, return the sha and nuxt major to use as overrides. Returns null
+ * when no sha can be resolved or no build has been published, so callers fall
+ * back to building from source.
+ */
+export async function resolvePkgPrNew(
+  options: CommandOptions,
+): Promise<{ sha: string, nuxtMajor: number } | null> {
+  const sha = await resolveCommitSha(options)
+  if (!sha) {
+    return null
+  }
+  const url = `${PKG_PR_NEW_BASE}/nuxt@${sha}`
+  try {
+    await $fetch(url, { method: 'HEAD' })
+  }
+  catch {
+    return null
+  }
+  const repo = options.repo || 'nuxt/nuxt'
+  let nuxtMajor: number
+  try {
+    // raw.githubusercontent serves package.json as text/plain, so parse it
+    // ourselves rather than relying on ofetch's content-type detection
+    const { version } = await $fetch<{ version: string }>(
+      `https://raw.githubusercontent.com/${repo}/${sha}/packages/nuxt/package.json`,
+      { responseType: 'json' },
+    )
+    nuxtMajor = parseMajorVersion(version)
+  }
+  catch {
+    return null
+  }
+  console.log(`continuous release available on ${url}`)
+  return { sha, nuxtMajor }
+}
+
 export async function getNuxtNightlyVersion(): Promise<string | null> {
   const commit = execSync('git rev-parse --short HEAD', { cwd: nuxtPath }).toString('utf-8').trim().slice(0, 8)
   try {
@@ -240,6 +333,45 @@ export async function getNuxtNightlyVersion(): Promise<string | null> {
     console.warn(`Failed to get Nuxt nightly version for commit ${commit}:`, error)
   }
   return null
+}
+
+/**
+ * Load nuxt's root manifest (for `resolutions`/`devDependencies` pins) and its
+ * pnpm-workspace config. When a pkg.pr.new build is used there is no local
+ * checkout, so fetch both from GitHub at the resolved commit instead.
+ */
+async function loadNuxtManifests(options: RunOptions): Promise<{
+  resolutions?: Record<string, string>
+  devDependencies?: Record<string, string>
+  workspaceConfig: PnpmWorkspaceConfig
+}> {
+  if (options.prNew) {
+    const repo = options.repo || 'nuxt/nuxt'
+    const base = `https://raw.githubusercontent.com/${repo}/${options.prNew}`
+    const { resolutions, devDependencies } = await $fetch<{
+      resolutions?: Record<string, string>
+      devDependencies?: Record<string, string>
+    }>(`${base}/package.json`, { responseType: 'json' })
+    const workspaceYaml = (await $fetch(`${base}/pnpm-workspace.yaml`, {
+      responseType: 'text',
+    })) as string
+    return {
+      resolutions,
+      devDependencies,
+      workspaceConfig: parsePnpmWorkspaceConfig(workspaceYaml),
+    }
+  }
+  const { resolutions, devDependencies } = JSON.parse(
+    await fs.promises.readFile(
+      path.join(options.nuxtPath, 'package.json'),
+      'utf-8',
+    ),
+  )
+  return {
+    resolutions,
+    devDependencies,
+    workspaceConfig: readPnpmWorkspaceConfig(options.nuxtPath),
+  }
 }
 
 export async function runInRepo(options: RunOptions & RepoOptions) {
@@ -320,7 +452,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     // 'consola',
     // 'vue-router',
   ]
-  if (parseNuxtMajor(nuxtPath) >= 4) {
+  if (options.nuxtMajor >= 4) {
     ecosystemPackages.push(
       'vite',
       '@vitejs/plugin-vue',
@@ -340,6 +472,11 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     }
     else {
       overrides.nuxt = options.release
+    }
+  }
+  else if (options.prNew) {
+    for (const name of PKG_PR_NEW_PACKAGES) {
+      overrides[name] ??= `${PKG_PR_NEW_BASE}/${name}@${options.prNew}`
     }
   }
   else if (options.nightly) {
@@ -378,13 +515,8 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     Object.assign(overrides, localOverrides)
   }
 
-  const { resolutions, devDependencies } = JSON.parse(
-    await fs.promises.readFile(
-      path.join(options.nuxtPath, 'package.json'),
-      'utf-8',
-    ),
-  )
-  const nuxtWorkspaceConfig = readPnpmWorkspaceConfig(options.nuxtPath)
+  const { resolutions, devDependencies, workspaceConfig: nuxtWorkspaceConfig }
+    = await loadNuxtManifests(options)
   const resolveCatalogRef = (name: string, value?: string) => {
     if (!value?.startsWith('catalog:')) {
       return value
@@ -655,12 +787,24 @@ async function relaxPnpmInstallPolicy(dir: string) {
   await fs.promises.writeFile(workspaceFile, doc.toString(), 'utf-8')
 }
 
-function readPnpmWorkspaceConfig(dir: string): {
+interface PnpmWorkspaceConfig {
   overrides: Record<string, string>
   patchedDependencies: Record<string, string>
   catalog: Record<string, string>
   catalogs: Record<string, Record<string, string>>
-} {
+}
+
+function parsePnpmWorkspaceConfig(content: string): PnpmWorkspaceConfig {
+  const parsed = YAML.parse(content) ?? {}
+  return {
+    overrides: parsed.overrides ?? {},
+    patchedDependencies: parsed.patchedDependencies ?? {},
+    catalog: parsed.catalog ?? {},
+    catalogs: parsed.catalogs ?? {},
+  }
+}
+
+function readPnpmWorkspaceConfig(dir: string): PnpmWorkspaceConfig {
   const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
   if (!fs.existsSync(workspaceFile)) {
     return { overrides: {}, patchedDependencies: {}, catalog: {}, catalogs: {} }
