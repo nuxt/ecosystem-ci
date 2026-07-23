@@ -63,6 +63,7 @@ cli
       nuxtMajor,
       workspace,
       repo: options.repo,
+      nuxtRepo: options.repo,
       release: options.release,
       nightly: options.nightly,
       prNew: options.prNew,
@@ -130,6 +131,7 @@ cli
       nuxtPath,
       nuxtMajor,
       workspace,
+      nuxtRepo: options.repo,
     }
     for (const suite of suitesToRun) {
       await run(suite, runOptions)

@@ -15,6 +15,7 @@ export interface RunOptions {
   nuxtPath: string
   nuxtMajor: number
   repo?: string
+  nuxtRepo?: string
   verify?: boolean
   skipGit?: boolean
   release?: string

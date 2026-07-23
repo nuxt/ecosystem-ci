@@ -346,7 +346,7 @@ async function loadNuxtManifests(options: RunOptions): Promise<{
   workspaceConfig: PnpmWorkspaceConfig
 }> {
   if (options.prNew) {
-    const repo = options.repo || 'nuxt/nuxt'
+    const repo = options.nuxtRepo || 'nuxt/nuxt'
     const base = `https://raw.githubusercontent.com/${repo}/${options.prNew}`
     const { resolutions, devDependencies } = await $fetch<{
       resolutions?: Record<string, string>
