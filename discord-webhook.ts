@@ -12,6 +12,7 @@ interface Env {
   SUITE?: string
   STATUS?: Status
   DISCORD_WEBHOOK_URL?: string
+  PR_NEW?: string
 }
 
 const statusConfig = {
@@ -58,8 +59,11 @@ async function run() {
   await setupEnvironment()
 
   const refType = env.REF_TYPE
-  // nuxt repo is not cloned when release
-  const permRef = refType === 'release' ? undefined : await getPermanentRef()
+  // nuxt repo is not cloned when release or resolved from pkg.pr.new
+  const permRef
+    = refType === 'release'
+      ? undefined
+      : env.PR_NEW ?? (await getPermanentRef())
 
   const targetText = createTargetText(refType, env.REF, permRef, env.REPO)
 

@@ -320,6 +320,7 @@ export async function resolvePkgPrNew(
     return null
   }
   console.log(`continuous release available on ${url}`)
+  actionsCore.exportVariable('PR_NEW', sha)
   return { sha, nuxtMajor }
 }
 
@@ -640,6 +641,9 @@ export async function setupNuxtRepo(options: Partial<RepoOptions>) {
 }
 
 export async function getPermanentRef() {
+  if (!fs.existsSync(nuxtPath)) {
+    return undefined
+  }
   cd(nuxtPath)
   try {
     const ref = await $`git log -1 --pretty=format:%h`
