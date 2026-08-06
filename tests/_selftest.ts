@@ -16,8 +16,11 @@ export async function test(options: RunOptions) {
           `invalid checkout, expected package.json with "name":"nuxt-ecosystem-ci" in ${dir}`,
         )
       }
-      pkg.scripts.selftestscript
-        = '[ -d ../../nuxt/packages/nuxt/dist ] || (echo \'nuxt build failed\' && exit 1)'
+      // when a continuous release is used, nuxt is never cloned or built, so
+      // assert the override reached the lockfile instead of looking for dist/
+      pkg.scripts.selftestscript = options.prNew
+        ? `grep -q 'tarball: https://pkg.pr.new/nuxt@${options.prNew}' pnpm-lock.yaml || (echo 'nuxt continuous release not applied' && exit 1)`
+        : '[ -d ../../nuxt/packages/nuxt/dist ] || (echo \'nuxt build failed\' && exit 1)'
       await fs.promises.writeFile(
         pkgFile,
         JSON.stringify(pkg, null, 2),
