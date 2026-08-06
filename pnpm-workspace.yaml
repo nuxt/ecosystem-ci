@@ -7,3 +7,10 @@ engineStrict: true
 
 allowBuilds:
   simple-git-hooks: true
+
+minimumReleaseAgeExclude:
+  - nuxt
+  - nuxt-nightly
+  - '@nuxt/*'
+  - vue
+  - '@vue/*'
