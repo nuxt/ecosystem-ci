@@ -771,6 +771,65 @@ async function overridePackageManagerVersion(
   return false
 }
 
+/**
+ * Align `packageManager` pins in nested package.json files with the version we actually run.
+ *
+ * Suites often install inside their own fixtures (e.g. `pnpm install --dir test/fixtures/x`),
+ * and those fixtures can pin a different package manager version than the repo root. pnpm
+ * refuses to run on a mismatch and cannot switch versions while invoked through corepack, so
+ * the install fails before the suite gets a chance to run.
+ */
+async function alignNestedPackageManagerPins(
+  dir: string,
+  pm: string,
+  versionInUse: string,
+) {
+  const pin = `${pm}@${versionInUse}`
+  const queue = [dir]
+  if (!semver.valid(versionInUse)) {
+    return
+  }
+  while (queue.length) {
+    const current = queue.pop()!
+    for (const entry of await fs.promises.readdir(current, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (entry.name === 'node_modules' || entry.name === '.git') {
+          continue
+        }
+        queue.push(path.join(current, entry.name))
+        continue
+      }
+      if (entry.name !== 'package.json' || current === dir) {
+        continue
+      }
+      const file = path.join(current, entry.name)
+      let nested: Record<string, any>
+      try {
+        nested = JSON.parse(await fs.promises.readFile(file, 'utf-8'))
+      }
+      catch {
+        continue
+      }
+      let changed = false
+      if (typeof nested.packageManager === 'string' && nested.packageManager.startsWith(`${pm}@`) && nested.packageManager !== pin) {
+        nested.packageManager = pin
+        changed = true
+      }
+      const devEnginesPm = nested.devEngines?.packageManager
+      for (const declared of Array.isArray(devEnginesPm) ? devEnginesPm : [devEnginesPm]) {
+        if (declared?.name === pm && typeof declared.version === 'string' && !semver.satisfies(versionInUse, declared.version)) {
+          declared.version = versionInUse
+          changed = true
+        }
+      }
+      if (changed) {
+        console.warn(`aligned ${pm} pin in ${path.relative(dir, file)} with ${pin}`)
+        await fs.promises.writeFile(file, `${JSON.stringify(nested, null, 2)}\n`, 'utf-8')
+      }
+    }
+  }
+}
+
 async function relaxPnpmInstallPolicy(dir: string) {
   const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
   const doc = fs.existsSync(workspaceFile)
@@ -883,6 +942,12 @@ export async function applyPackageOverrides(
   const pm = agent?.split('@')[0]
 
   await overridePackageManagerVersion(pkg, pm)
+
+  const versionInUse = pkg.packageManager?.startsWith(`${pm}@`)
+    ? pkg.packageManager.slice(pm.length + 1)
+    : await $`${pm} --version`
+  // `packageManager` may carry an integrity hash (`pnpm@1.2.3+sha512...`)
+  await alignNestedPackageManagerPins(dir, pm, versionInUse.trim().split('+')[0])
 
   if (pm === 'pnpm') {
     if (!pkg.devDependencies) {
