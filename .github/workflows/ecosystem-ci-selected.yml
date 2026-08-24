@@ -108,7 +108,8 @@ jobs:
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.7.4
-      - run: pnpm i --frozen-lockfile
+      - run: pnpm i --frozen-lockfile || pnpm i --frozen-lockfile
+        id: install
       - run: >-
           pnpm test
           "--$REF_TYPE" "$REF"
@@ -126,7 +127,7 @@ jobs:
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro }}
-      - if: always()
+      - if: always() && steps.install.outcome == 'success'
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning discord-webhook.ts
         env:
           WORKFLOW_NAME: ci-selected

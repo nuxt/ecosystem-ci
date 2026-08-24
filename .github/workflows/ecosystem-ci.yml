@@ -111,7 +111,8 @@ jobs:
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: v2.7.4
-      - run: pnpm i --frozen-lockfile
+      - run: pnpm i --frozen-lockfile || pnpm i --frozen-lockfile
+        id: install
       - if: ${{ !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || '4.x') == '4.x') }}
         run: >-
           pnpm test
@@ -131,7 +132,7 @@ jobs:
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro || 'v2 latest' }}
 
-      - if: always() && !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || '4.x') == '4.x')
+      - if: always() && steps.install.outcome == 'success' && !(matrix.suite == 'bridge' && (inputs.ref || github.event.client_payload.ref || '4.x') == '4.x')
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning discord-webhook.ts
         env:
           WORKFLOW_NAME: ci
