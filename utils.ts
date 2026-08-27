@@ -847,6 +847,10 @@ async function relaxPnpmInstallPolicy(dir: string) {
   doc.set('minimumReleaseAge', 0)
   doc.set('blockExoticSubdeps', false)
   doc.set('strictDepBuilds', false)
+  // `patchedDependencies` keys pin an exact version, so overriding first-party
+  // packages can move a transitive dependency off the patched version and make
+  // pnpm fail the install with ERR_PNPM_UNUSED_PATCH.
+  doc.set('allowUnusedPatches', true)
   await fs.promises.writeFile(workspaceFile, doc.toString(), 'utf-8')
 }
 
