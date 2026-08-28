@@ -1091,6 +1091,117 @@ export async function applyPackageOverrides(
   else if (pm === 'npm') {
     await $`npm install`
   }
+
+  if (pm === 'pnpm') {
+    await reportFirstPartyResolution(dir, overrides as Record<string, string>)
+  }
+}
+
+const FIRST_PARTY_RE = /^(?:nuxt|@nuxt\/[a-z-]+)$/
+
+/**
+ * Describe what an override is expected to resolve to in `pnpm-lock.yaml`.
+ *
+ * Lockfile entries record a `file:`/`https:` prefix verbatim for tarball and pkg.pr.new
+ * overrides, and the aliased name for `npm:` overrides, so each override kind has a distinct
+ * fingerprint. A plain version override is the ambiguous case: it looks identical to a registry
+ * release, which is exactly the state we cannot otherwise detect.
+ */
+function describeExpectedResolution(override: string) {
+  if (override.startsWith('file:')) {
+    return { fingerprint: path.basename(override), ambiguous: false }
+  }
+  if (override.startsWith('npm:')) {
+    return { fingerprint: override.slice('npm:'.length), ambiguous: false }
+  }
+  if (/^https?:/.test(override)) {
+    return { fingerprint: override, ambiguous: false }
+  }
+  return { fingerprint: override, ambiguous: true }
+}
+
+/**
+ * Report, per workspace project, whether each first-party dependency actually resolved to the
+ * build under test.
+ *
+ * A suite can install cleanly while silently testing a published release: pnpm resolves the more
+ * specific selector first, so a repo-declared `somePkg>@nuxt/kit` pin, a catalog entry or an
+ * aliased dependency can outrank the override. Because `4.x` carries the same version string as
+ * the latest release, that substitution is invisible in install output.
+ */
+async function reportFirstPartyResolution(
+  dir: string,
+  overrides: Record<string, string>,
+) {
+  const expected = Object.entries(overrides).filter(([name]) =>
+    FIRST_PARTY_RE.test(name),
+  )
+  if (!expected.length) {
+    return
+  }
+
+  const lockfile = path.join(dir, 'pnpm-lock.yaml')
+  if (!fs.existsSync(lockfile)) {
+    console.warn('[resolution] no pnpm-lock.yaml after install, skipping check')
+    return
+  }
+
+  const lock = YAML.parse(await fs.promises.readFile(lockfile, 'utf-8')) ?? {}
+  const importers: Record<string, any> = lock.importers ?? {}
+  const mismatches: string[] = []
+  const unverifiable: string[] = []
+  const aliased: string[] = []
+
+  for (const [importer, entry] of Object.entries(importers)) {
+    const declared = {
+      ...entry?.dependencies,
+      ...entry?.devDependencies,
+      ...entry?.optionalDependencies,
+    }
+    for (const [name, override] of expected) {
+      const resolved = declared[name]?.version
+      if (!resolved) {
+        continue
+      }
+      const location = `${importer} > ${name}`
+      // A dependency aliased to another package (`nuxt: npm:nuxt-nightly@5x`) asks for a
+      // different major on purpose, so the build under test is not meant to reach it.
+      const specifier = String(declared[name]?.specifier ?? '')
+      if (specifier.startsWith('npm:') && !specifier.startsWith(`npm:${name}@`)) {
+        aliased.push(`${location} = ${resolved} (declared ${specifier})`)
+        continue
+      }
+      const { fingerprint, ambiguous } = describeExpectedResolution(override)
+      if (ambiguous) {
+        unverifiable.push(`${location} = ${resolved} (override ${override})`)
+      }
+      else if (!String(resolved).includes(fingerprint)) {
+        mismatches.push(
+          `${location} = ${resolved}, expected to contain ${fingerprint}`,
+        )
+      }
+    }
+  }
+
+  const indent = (lines: string[]) => lines.map(line => `  ${line}`).join('\n')
+  if (mismatches.length) {
+    console.warn(
+      `::warning::${mismatches.length} first-party dependencies did not resolve to the build under test:\n${indent(mismatches)}`,
+    )
+  }
+  else {
+    console.log('[resolution] all first-party dependencies resolved to the build under test')
+  }
+  if (unverifiable.length) {
+    console.log(
+      `[resolution] ${unverifiable.length} resolutions cannot be verified from a plain version override:\n${indent(unverifiable)}`,
+    )
+  }
+  if (aliased.length) {
+    console.log(
+      `[resolution] ${aliased.length} dependencies are aliased to another package and left alone:\n${indent(aliased)}`,
+    )
+  }
 }
 
 /**
