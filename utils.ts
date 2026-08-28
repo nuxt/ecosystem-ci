@@ -290,10 +290,18 @@ async function resolveCommitSha(options: CommandOptions): Promise<string | null>
  * if present, return the sha and nuxt major to use as overrides. Returns null
  * when no sha can be resolved or no build has been published, so callers fall
  * back to building from source.
+ *
+ * Whether a build has been published varies per commit, so a run silently uses
+ * either mechanism. Set `SKIP_PKG_PR_NEW` to force the build-from-source path
+ * when comparing the two.
  */
 export async function resolvePkgPrNew(
   options: CommandOptions,
 ): Promise<{ sha: string, nuxtMajor: number } | null> {
+  if (process.env.SKIP_PKG_PR_NEW) {
+    console.log('SKIP_PKG_PR_NEW is set, building nuxt from source')
+    return null
+  }
   const sha = await resolveCommitSha(options)
   if (!sha) {
     return null

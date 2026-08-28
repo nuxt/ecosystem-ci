@@ -52,6 +52,11 @@ on:
         required: true
         type: string
         default: nuxt/nuxt
+      buildFromSource:
+        description: ignore any pkg.pr.new build and build nuxt from source
+        required: false
+        default: false
+        type: boolean
       suite:
         description: testsuite to run
         required: true
@@ -128,6 +133,7 @@ jobs:
           NUXT_UI_PRO_TOKEN: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro }}
+          SKIP_PKG_PR_NEW: ${{ inputs.buildFromSource && '1' || '' }}
       - if: always() && steps.install.outcome == 'success'
         run: node --experimental-strip-types --disable-warning=ExperimentalWarning
           discord-webhook.ts
