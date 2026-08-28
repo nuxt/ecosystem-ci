@@ -512,6 +512,7 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
       '@nuxt/vite-builder': 'packages/vite',
       '@nuxt/nitro-server': 'packages/nitro-server',
       '@nuxt/webpack-builder': 'packages/webpack',
+      '@nuxt/rspack-builder': 'packages/rspack',
     })
     for (const [name, tarball] of Object.entries(packed)) {
       overrides[name] ??= `file:${tarball}`
