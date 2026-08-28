@@ -6,6 +6,7 @@
     "group:allNonMajor"
   ],
   "forkProcessing": "enabled",
+  "dependencyDashboard": true,
   "packageRules": [
     {
       "matchDepTypes": ["peerDependencies", "engines"],
