@@ -5,9 +5,10 @@
     "schedule:weekly",
     "group:allNonMajor"
   ],
+  "forkProcessing": "enabled",
   "packageRules": [
     {
-      "depTypeList": ["peerDependencies", "engines"],
+      "matchDepTypes": ["peerDependencies", "engines"],
       "enabled": false
     }
   ]
