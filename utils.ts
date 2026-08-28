@@ -881,10 +881,39 @@ function readPnpmWorkspaceConfig(dir: string): PnpmWorkspaceConfig {
   }
 }
 
+/**
+ * Drop scoped overrides (`somePkg>@nuxt/kit`) that pin a first-party package to a plain version.
+ * pnpm resolves the more specific selector first, so such a pin silently wins over the override
+ * pointing at the build under test, and that part of the suite tests a registry release instead.
+ *
+ * Pins onto an `npm:` alias are kept: those hold a subtree on a deliberately different package,
+ * e.g. a playground pinned to `nuxt-nightly@5x`.
+ */
+function stripCompetingScopedOverrides(
+  target: Record<string, string>,
+  overrides: Record<string, string>,
+) {
+  const removed: string[] = []
+  for (const [key, value] of Object.entries(target)) {
+    const separator = key.lastIndexOf('>')
+    if (separator === -1 || String(value).startsWith('npm:')) {
+      continue
+    }
+    const dependency = key.slice(separator + 1)
+    const isFirstParty = dependency === 'nuxt' || dependency.startsWith('@nuxt/')
+    if (isFirstParty && dependency in overrides) {
+      delete target[key]
+      removed.push(key)
+    }
+  }
+  return removed
+}
+
 async function mirrorOverridesToPnpmWorkspace(
   dir: string,
   overrides: Record<string, string>,
   patchedDependencies: Record<string, string>,
+  removedOverrides: string[] = [],
 ) {
   const workspaceFile = path.join(dir, 'pnpm-workspace.yaml')
   if (!fs.existsSync(workspaceFile)) {
@@ -893,6 +922,9 @@ async function mirrorOverridesToPnpmWorkspace(
   const doc = YAML.parseDocument(await fs.promises.readFile(workspaceFile, 'utf-8'))
   for (const [name, value] of Object.entries(overrides)) {
     doc.setIn(['overrides', name], value)
+  }
+  for (const name of removedOverrides) {
+    doc.deleteIn(['overrides', name])
   }
   const existingPatches = doc.get('patchedDependencies') as YAML.YAMLMap | undefined
   if (existingPatches?.items) {
@@ -981,6 +1013,10 @@ export async function applyPackageOverrides(
       ...pkg.pnpm.overrides,
       ...overrides,
     }
+    const removedOverrides = stripCompetingScopedOverrides(
+      pkg.pnpm.overrides,
+      overrides as Record<string, string>,
+    )
     pkg.pnpm.patchedDependencies = {
       ...workspaceConfig.patchedDependencies,
       ...pkg.pnpm.patchedDependencies,
@@ -1004,6 +1040,7 @@ export async function applyPackageOverrides(
       dir,
       pkg.pnpm.overrides,
       pkg.pnpm.patchedDependencies,
+      removedOverrides,
     )
     await relaxPnpmInstallPolicy(dir)
   }
