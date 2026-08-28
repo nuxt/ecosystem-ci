@@ -55,7 +55,7 @@ on:
         type: string
         default: nuxt/nuxt
   repository_dispatch:
-    types: [ ecosystem-ci ]
+    types: [ecosystem-ci]
 
 permissions: {}
 
