@@ -83,7 +83,9 @@ on:
           - sitemap
           - i18n-module
           # - werewolves-assistant
-          - antoine-zanardi-portfolio
+          # the app pins `@nuxt/image@^1`, which no longer typechecks against current unhead,
+          # and its tests do not yet compile against v2's generic component types
+          # - antoine-zanardi-portfolio
           - storybook
           - npmx
 
