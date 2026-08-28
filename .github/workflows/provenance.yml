@@ -17,11 +17,11 @@ jobs:
       id-token: write # to verify provenance attestations
       contents: read # to clone the repo
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
           fetch-depth: 0
       - name: Check provenance downgrades
-        uses: danielroe/provenance-action@a5a718233ca12eff67651fcf29a030bbbd5b3ca1 # v0.1.0
+        uses: danielroe/provenance-action@fcc45fd5a5b818c477432b32c838dcd0c79cd2dd # v0.2.0
         with:
           fail-on-provenance-change: true

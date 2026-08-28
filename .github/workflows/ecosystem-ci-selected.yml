@@ -37,7 +37,8 @@ on:
           - v2 latest
         default: v2 latest
       nitroRef:
-        description: nitro branch/commit to build from source (overrides the published-nightly "nitro" option)
+        description: nitro branch/commit to build from source (overrides the
+          published-nightly "nitro" option)
         required: false
         type: string
         default: ''
@@ -98,14 +99,14 @@ jobs:
     permissions:
       contents: read # to clone the repo
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - run: corepack enable
-      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version: lts/*
-      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2.1.2
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
       - uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
@@ -114,12 +115,9 @@ jobs:
       - run: pnpm i --frozen-lockfile || pnpm i --frozen-lockfile
         id: install
       - run: >-
-          pnpm test
-          "--$REF_TYPE" "$REF"
-          --repo "$REPO"
-          $(if [ -n "$NITRO_REF" ]; then echo "--nitro-ref $NITRO_REF"; fi)
-          $(if [ -n "$H3_REF" ]; then echo "--h3-ref $H3_REF"; fi)
-          "${{ inputs.suite }}"
+          pnpm test "--$REF_TYPE" "$REF" --repo "$REPO" $(if [ -n "$NITRO_REF"
+          ]; then echo "--nitro-ref $NITRO_REF"; fi) $(if [ -n "$H3_REF" ]; then
+          echo "--h3-ref $H3_REF"; fi) "${{ inputs.suite }}"
         id: ecosystem-ci-run
         env:
           REF_TYPE: ${{ inputs.refType }}
@@ -131,7 +129,8 @@ jobs:
           NUXT_UI_PRO_LICENSE: ${{ secrets.NUXT_UI_PRO_TOKEN }}
           NITRO_VERSION: ${{ inputs.nitro }}
       - if: always() && steps.install.outcome == 'success'
-        run: node --experimental-strip-types --disable-warning=ExperimentalWarning discord-webhook.ts
+        run: node --experimental-strip-types --disable-warning=ExperimentalWarning
+          discord-webhook.ts
         env:
           WORKFLOW_NAME: ci-selected
           REF_TYPE: ${{ inputs.refType }}
