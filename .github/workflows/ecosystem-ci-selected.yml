@@ -68,7 +68,8 @@ on:
           - vite-pwa
           - docus
           - og-image
-          - histoire
+          # histoire builds with `moduleResolution: node`, which cannot resolve vite 8's types
+          # - histoire
           - elk
           - devtools
           - fonts
