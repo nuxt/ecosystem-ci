@@ -556,10 +556,6 @@ export async function runInRepo(options: RunOptions & RepoOptions) {
     if (nitropackVersion) {
       overrides.nitropack ??= nitropackVersion
     }
-    const h3Version = pin('h3')
-    if (h3Version) {
-      overrides.h3 ??= h3Version
-    }
   }
 
   const unheadVersion = pin('@unhead/vue')
