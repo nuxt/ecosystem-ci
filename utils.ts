@@ -1102,7 +1102,12 @@ export async function applyPackageOverrides(
   }
 
   if (pm === 'pnpm') {
-    await reportFirstPartyResolution(dir, overrides as Record<string, string>)
+    await reportFirstPartyResolution(
+      dir,
+      overrides as Record<string, string>,
+    ).catch((error) => {
+      console.warn(`[resolution] check failed: ${error}`)
+    })
   }
 }
 
@@ -1127,6 +1132,11 @@ function describeExpectedResolution(override: string) {
     return { fingerprint: override, ambiguous: false }
   }
   return { fingerprint: override, ambiguous: true }
+}
+
+function parseLockfile(source: string): Record<string, any> {
+  const docs = YAML.parseAllDocuments(source)
+  return Object.assign({}, ...docs.map(doc => doc.toJS() ?? {}))
 }
 
 /**
@@ -1155,7 +1165,7 @@ async function reportFirstPartyResolution(
     return
   }
 
-  const lock = YAML.parse(await fs.promises.readFile(lockfile, 'utf-8')) ?? {}
+  const lock = parseLockfile(await fs.promises.readFile(lockfile, 'utf-8'))
   const importers: Record<string, any> = lock.importers ?? {}
   const mismatches: string[] = []
   const unverifiable: string[] = []
