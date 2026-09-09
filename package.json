@@ -5,12 +5,12 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^24.0.0",
+      "version": "^24.21.0",
       "onFail": "download"
     },
     "packageManager": {
       "name": "pnpm",
-      "version": "11.24.0",
+      "version": "12.3.4",
       "onFail": "download"
     }
   },
@@ -60,7 +60,7 @@
     "typescript": "^5.9.3"
   },
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged --concurrent false"
+    "pre-commit": "pnpm lint-staged --concurrent false"
   },
   "lint-staged": {
     "*.{ts,js,json,md,yaml}": [
