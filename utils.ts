@@ -18,9 +18,9 @@ import * as actionsCore from '@actions/core'
 import { AGENTS, detect, getCommand, serializeCommand } from '@antfu/ni'
 import { execaCommand } from 'execa'
 import { $fetch } from 'ofetch'
-// eslint-disable-next-line node/no-unpublished-import
-import * as semver from 'semver'
 import { isCI } from 'std-env'
+// eslint-disable-next-line node/no-unpublished-import
+import { isEqual, isValid, satisfies } from 'verkit'
 import YAML from 'yaml'
 
 const isGitHubActions = !!process.env.GITHUB_ACTIONS
@@ -749,7 +749,7 @@ async function overridePackageManagerVersion(
     : await $`${pm} --version`
   let overrideWithVersion: string | null = null
   if (pm === 'pnpm') {
-    if (semver.eq(versionInUse, '7.18.0')) {
+    if (isEqual(versionInUse, '7.18.0')) {
       // avoid bug with absolute overrides in pnpm 7.18.0
       overrideWithVersion = '7.18.1'
     }
@@ -791,7 +791,7 @@ async function alignNestedPackageManagerPins(
 ) {
   const pin = `${pm}@${versionInUse}`
   const queue = [dir]
-  if (!semver.valid(versionInUse)) {
+  if (!isValid(versionInUse)) {
     return
   }
   while (queue.length) {
@@ -822,7 +822,7 @@ async function alignNestedPackageManagerPins(
       }
       const devEnginesPm = nested.devEngines?.packageManager
       for (const declared of Array.isArray(devEnginesPm) ? devEnginesPm : [devEnginesPm]) {
-        if (declared?.name === pm && typeof declared.version === 'string' && !semver.satisfies(versionInUse, declared.version)) {
+        if (declared?.name === pm && typeof declared.version === 'string' && !satisfies(versionInUse, declared.version)) {
           declared.version = versionInUse
           changed = true
         }
