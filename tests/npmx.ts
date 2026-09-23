@@ -5,6 +5,7 @@ export async function test(options: RunOptions) {
   await runInRepo({
     ...options,
     repo: 'npmx-dev/npmx.dev',
+    shallow: false,
     build: [],
     test: ['build'],
   })
