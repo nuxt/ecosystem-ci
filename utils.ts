@@ -890,27 +890,28 @@ function readPnpmWorkspaceConfig(dir: string): PnpmWorkspaceConfig {
   }
 }
 
+const FIRST_PARTY_RE = /^(?:nuxt|@nuxt\/[a-z-]+)$/
+
 /**
- * Drop scoped overrides (`somePkg>@nuxt/kit`) that pin a first-party package to a plain version.
- * pnpm resolves the more specific selector first, so such a pin silently wins over the override
- * pointing at the build under test, and that part of the suite tests a registry release instead.
- *
- * Pins onto an `npm:` alias are kept: those hold a subtree on a deliberately different package,
- * e.g. a playground pinned to `nuxt-nightly@5x`.
+ * Drop repo overrides that pnpm would prefer over ours: version-ranged selectors (`unhead@>=3`)
+ * for any package we override, and parent-scoped selectors (`somePkg>@nuxt/kit`) for first-party
+ * packages. `npm:` aliases (e.g. a playground on `nuxt-nightly@5x`) are kept.
  */
-function stripCompetingScopedOverrides(
+function stripCompetingOverrides(
   target: Record<string, string>,
   overrides: Record<string, string>,
 ) {
   const removed: string[] = []
   for (const [key, value] of Object.entries(target)) {
-    const separator = key.lastIndexOf('>')
-    if (separator === -1 || String(value).startsWith('npm:')) {
+    if (key in overrides || String(value).startsWith('npm:')) {
       continue
     }
-    const dependency = key.slice(separator + 1)
-    const isFirstParty = dependency === 'nuxt' || dependency.startsWith('@nuxt/')
-    if (isFirstParty && dependency in overrides) {
+    // a `>` after a space, `|` or `@` is part of a version range
+    const delimiter = key.search(/[^ |@]>/)
+    const selector = delimiter === -1 ? key : key.slice(delimiter + 2)
+    const versionAt = selector.indexOf('@', 1)
+    const dependency = versionAt === -1 ? selector : selector.slice(0, versionAt)
+    if ((delimiter === -1 || FIRST_PARTY_RE.test(dependency)) && dependency in overrides) {
       delete target[key]
       removed.push(key)
     }
@@ -1022,7 +1023,7 @@ export async function applyPackageOverrides(
       ...pkg.pnpm.overrides,
       ...overrides,
     }
-    const removedOverrides = stripCompetingScopedOverrides(
+    const removedOverrides = stripCompetingOverrides(
       pkg.pnpm.overrides,
       overrides as Record<string, string>,
     )
@@ -1110,8 +1111,6 @@ export async function applyPackageOverrides(
     })
   }
 }
-
-const FIRST_PARTY_RE = /^(?:nuxt|@nuxt\/[a-z-]+)$/
 
 /**
  * Describe what an override is expected to resolve to in `pnpm-lock.yaml`.
