@@ -173,8 +173,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       cac:
-        specifier: ^6.7.14
-        version: 6.7.14
+        specifier: ^7.1.0
+        version: 7.1.0
       execa:
         specifier: ^9.6.1
         version: 9.6.1
@@ -632,6 +632,10 @@ packages:
   cac@6.7.14:
     resolution: {integrity: sha512-b6Ilus+c3RrdDk+JhLKUAQfzzgLEPy6wcXqS7f/xe1EETvsDP6GORG7SFuOs6cID5YkqchW/LXZbX5bc8j7ZcQ==}
     engines: {node: '>=8'}
+
+  cac@7.1.0:
+    resolution: {integrity: sha512-LMDU/U2yA4IPIY8KT0NsNPWEYZvAMkbgyspxJ6btJaYV+WMDOHAZCmB0lsTObiHaRS1V/ztKAl7+TSkTqXyeoA==}
+    engines: {node: '>=20.19.0'}
 
   callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
@@ -2339,6 +2343,8 @@ snapshots:
   builtin-modules@5.3.0: {}
 
   cac@6.7.14: {}
+
+  cac@7.1.0: {}
 
   callsites@3.1.0: {}
 
