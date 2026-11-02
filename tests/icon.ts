@@ -6,6 +6,7 @@ export async function test(options: RunOptions) {
     ...options,
     repo: 'nuxt/icon',
     build: ['dev:prepare', 'build'],
+    beforeTest: 'pnpm playwright-core install chromium',
     test: ['typecheck', 'test'],
   })
 }
