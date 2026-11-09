@@ -42,7 +42,7 @@
     "execa": "^9.6.1",
     "node-fetch-native": "^1.6.7",
     "ofetch": "^1.5.1",
-    "std-env": "^3.10.0",
+    "std-env": "^4.3.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {

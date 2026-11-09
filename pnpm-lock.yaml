@@ -185,8 +185,8 @@ importers:
         specifier: ^1.5.1
         version: 1.5.1
       std-env:
-        specifier: ^3.10.0
-        version: 3.10.0
+        specifier: ^4.3.0
+        version: 4.3.0
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
@@ -1720,8 +1720,8 @@ packages:
   spdx-license-ids@3.0.23:
     resolution: {integrity: sha512-CWLcCCH7VLu13TgOH+r8p1O/Znwhqv/dbb6lqWy67G+pT1kHmeD/+V36AVb/vq8QMIQwVShJ6Ssl5FPh0fuSdw==}
 
-  std-env@3.10.0:
-    resolution: {integrity: sha512-5GS12FdOZNliM5mAOxFRg7Ir0pWz8MdpYm6AY6VPkGpbA7ZzmbzNcBJQ0GPvvyWgcY7QAhCgf9Uy89I03faLkg==}
+  std-env@4.3.0:
+    resolution: {integrity: sha512-OtU/EgQ1kIm5KwqQpBC6ZEMXrZRui11w8zgfTWp8cdO9B8OaPsbA8bTHO2P+HNo1VlUTGMVBwPhydu6poeXiag==}
 
   string-argv@0.3.2:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
@@ -3487,7 +3487,7 @@ snapshots:
 
   spdx-license-ids@3.0.23: {}
 
-  std-env@3.10.0: {}
+  std-env@4.3.0: {}
 
   string-argv@0.3.2: {}
 
