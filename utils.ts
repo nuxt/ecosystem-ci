@@ -20,7 +20,7 @@ import { execaCommand } from 'execa'
 import { $fetch } from 'ofetch'
 import { isCI } from 'std-env'
 // eslint-disable-next-line node/no-unpublished-import
-import { isEqual, isValid, satisfies } from 'verkit'
+import { findMaxSatisfying, isEqual, isValid, satisfies } from 'verkit'
 import YAML from 'yaml'
 
 const isGitHubActions = !!process.env.GITHUB_ACTIONS
@@ -919,6 +919,107 @@ function stripCompetingOverrides(
   return removed
 }
 
+function parseAliasSpecifier(name: string, specifier: unknown) {
+  if (typeof specifier !== 'string' || !specifier.startsWith('npm:')) {
+    return null
+  }
+  const target = specifier.slice('npm:'.length)
+  const versionAt = target.indexOf('@', 1)
+  const targetName = versionAt === -1 ? target : target.slice(0, versionAt)
+  if (targetName === name) {
+    return null
+  }
+  return { name: targetName, range: versionAt === -1 ? 'latest' : target.slice(versionAt + 1) }
+}
+
+async function resolveRegistryVersion(name: string, range: string) {
+  if (isValid(range)) {
+    return range
+  }
+  const packument = await $fetch<{ 'dist-tags': Record<string, string>, 'versions': Record<string, unknown> }>(
+    `https://registry.npmjs.org/${name}`,
+    { headers: { accept: 'application/vnd.npm.install-v1+json' } },
+  )
+  const version = packument['dist-tags'][range] ?? findMaxSatisfying(Object.keys(packument.versions), range)
+  if (!version) {
+    throw new Error(`could not resolve ${name}@${range} from the registry`)
+  }
+  return version
+}
+
+/**
+ * Pin first-party dependencies aliased to another package (`nuxt: npm:nuxt-nightly@5x`), and the
+ * first-party aliases of that package, with `parent>dependency` overrides. pnpm applies a bare
+ * override to aliased dependencies too; a parent selector takes precedence and matches the
+ * parent's real package name.
+ */
+async function preserveAliasedDependencies(
+  dir: string,
+  overrides: Record<string, string>,
+) {
+  const lockfile = path.join(dir, 'pnpm-lock.yaml')
+  if (!fs.existsSync(lockfile)) {
+    return {}
+  }
+  const isOverridden = (name: string) => FIRST_PARTY_RE.test(name) && name in overrides
+  const lock = parseLockfile(await fs.promises.readFile(lockfile, 'utf-8'))
+  const preserved: Record<string, string> = {}
+  const queue: { name: string, version: string }[] = []
+
+  for (const [importer, entry] of Object.entries<any>(lock.importers ?? {})) {
+    const manifestFile = path.join(dir, importer, 'package.json')
+    if (!fs.existsSync(manifestFile)) {
+      continue
+    }
+    const manifest = JSON.parse(await fs.promises.readFile(manifestFile, 'utf-8'))
+    if (!manifest.name) {
+      continue
+    }
+    const locked = { ...entry?.dependencies, ...entry?.devDependencies, ...entry?.optionalDependencies }
+    const declared = { ...manifest.dependencies, ...manifest.devDependencies, ...manifest.optionalDependencies }
+    for (const [name, specifier] of Object.entries(declared)) {
+      const alias = isOverridden(name) && parseAliasSpecifier(name, specifier)
+      if (!alias) {
+        continue
+      }
+      const lockedVersion = locked[name]?.specifier === specifier
+        ? String(locked[name].version).replace(/\(.*$/, '').replace(`${alias.name}@`, '')
+        : undefined
+      const version = lockedVersion && isValid(lockedVersion)
+        ? lockedVersion
+        : await resolveRegistryVersion(alias.name, alias.range)
+      preserved[`${manifest.name}>${name}`] = `npm:${alias.name}@${version}`
+      queue.push({ name: alias.name, version })
+    }
+  }
+
+  const visited = new Set<string>()
+  while (queue.length) {
+    const { name, version } = queue.shift()!
+    if (visited.has(`${name}@${version}`)) {
+      continue
+    }
+    visited.add(`${name}@${version}`)
+    const manifest = await $fetch<Record<string, any>>(`https://registry.npmjs.org/${name}/${version}`)
+    for (const [dependency, specifier] of Object.entries({ ...manifest.dependencies, ...manifest.optionalDependencies })) {
+      const alias = isOverridden(dependency) && parseAliasSpecifier(dependency, specifier)
+      if (!alias) {
+        continue
+      }
+      const resolved = await resolveRegistryVersion(alias.name, alias.range)
+      preserved[`${name}@${version}>${dependency}`] = `npm:${alias.name}@${resolved}`
+      queue.push({ name: alias.name, version: resolved })
+    }
+  }
+
+  if (Object.keys(preserved).length) {
+    console.log(
+      `[resolution] keeping aliased first-party dependencies:\n${Object.entries(preserved).map(([key, value]) => `  ${key}: ${value}`).join('\n')}`,
+    )
+  }
+  return preserved
+}
+
 async function mirrorOverridesToPnpmWorkspace(
   dir: string,
   overrides: Record<string, string>,
@@ -1023,10 +1124,16 @@ export async function applyPackageOverrides(
       ...pkg.pnpm.overrides,
       ...overrides,
     }
-    const removedOverrides = stripCompetingOverrides(
+    const strippedOverrides = stripCompetingOverrides(
       pkg.pnpm.overrides,
       overrides as Record<string, string>,
     )
+    const preservedAliases = await preserveAliasedDependencies(
+      dir,
+      overrides as Record<string, string>,
+    )
+    Object.assign(pkg.pnpm.overrides, preservedAliases)
+    const removedOverrides = strippedOverrides.filter(key => !(key in preservedAliases))
     pkg.pnpm.patchedDependencies = {
       ...workspaceConfig.patchedDependencies,
       ...pkg.pnpm.patchedDependencies,
