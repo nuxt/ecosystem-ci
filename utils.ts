@@ -966,7 +966,7 @@ async function preserveAliasedDependencies(
   const preserved: Record<string, string> = {}
   const queue: { name: string, version: string }[] = []
 
-  for (const [importer, entry] of Object.entries<any>(lock.importers ?? {})) {
+  for (const importer of Object.keys(lock.importers ?? {})) {
     const manifestFile = path.join(dir, importer, 'package.json')
     if (!fs.existsSync(manifestFile)) {
       continue
@@ -975,19 +975,13 @@ async function preserveAliasedDependencies(
     if (!manifest.name) {
       continue
     }
-    const locked = { ...entry?.dependencies, ...entry?.devDependencies, ...entry?.optionalDependencies }
     const declared = { ...manifest.dependencies, ...manifest.devDependencies, ...manifest.optionalDependencies }
     for (const [name, specifier] of Object.entries(declared)) {
       const alias = isOverridden(name) && parseAliasSpecifier(name, specifier)
       if (!alias) {
         continue
       }
-      const lockedVersion = locked[name]?.specifier === specifier
-        ? String(locked[name].version).replace(/\(.*$/, '').replace(`${alias.name}@`, '')
-        : undefined
-      const version = lockedVersion && isValid(lockedVersion)
-        ? lockedVersion
-        : await resolveRegistryVersion(alias.name, alias.range)
+      const version = await resolveRegistryVersion(alias.name, alias.range)
       preserved[`${manifest.name}>${name}`] = `npm:${alias.name}@${version}`
       queue.push({ name: alias.name, version })
     }
