@@ -39,7 +39,7 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "cac": "^7.1.0",
-    "execa": "^9.6.1",
+    "execa": "^10.2.1",
     "node-fetch-native": "^1.6.7",
     "ofetch": "^1.5.1",
     "std-env": "^4.3.0",
