@@ -947,11 +947,27 @@ async function resolveRegistryVersion(name: string, range: string) {
   return version
 }
 
+function parseLockedAlias(dependency: string, locked: unknown) {
+  if (typeof locked !== 'string') {
+    return null
+  }
+  const reference = locked.replace(/\(.*$/, '')
+  const versionAt = reference.indexOf('@', 1)
+  if (versionAt === -1) {
+    return null
+  }
+  const name = reference.slice(0, versionAt)
+  const version = reference.slice(versionAt + 1)
+  return name !== dependency && isValid(version) ? { name, version } : null
+}
+
 /**
  * Pin first-party dependencies aliased to another package (`nuxt: npm:nuxt-nightly@5x`), and the
- * first-party aliases of that package, with `parent>dependency` overrides. pnpm applies a bare
+ * first-party aliases within that package's subtree, to the versions in the repo's lockfile
+ * (falling back to the registry) with `parent>dependency` overrides. pnpm applies a bare
  * override to aliased dependencies too; a parent selector takes precedence and matches the
- * parent's real package name.
+ * parent's real package name. Unversioned parent selectors replace any the repo declares for the
+ * same dependency.
  */
 async function preserveAliasedDependencies(
   dir: string,
@@ -966,7 +982,7 @@ async function preserveAliasedDependencies(
   const preserved: Record<string, string> = {}
   const queue: { name: string, version: string }[] = []
 
-  for (const importer of Object.keys(lock.importers ?? {})) {
+  for (const [importer, entry] of Object.entries<any>(lock.importers ?? {})) {
     const manifestFile = path.join(dir, importer, 'package.json')
     if (!fs.existsSync(manifestFile)) {
       continue
@@ -975,16 +991,28 @@ async function preserveAliasedDependencies(
     if (!manifest.name) {
       continue
     }
+    const locked = { ...entry?.dependencies, ...entry?.devDependencies, ...entry?.optionalDependencies }
     const declared = { ...manifest.dependencies, ...manifest.devDependencies, ...manifest.optionalDependencies }
     for (const [name, specifier] of Object.entries(declared)) {
       const alias = isOverridden(name) && parseAliasSpecifier(name, specifier)
       if (!alias) {
         continue
       }
-      const version = await resolveRegistryVersion(alias.name, alias.range)
+      const lockedAlias = locked[name]?.specifier === specifier
+        ? parseLockedAlias(name, locked[name].version)
+        : null
+      const version = lockedAlias?.name === alias.name
+        ? lockedAlias.version
+        : await resolveRegistryVersion(alias.name, alias.range)
       preserved[`${manifest.name}>${name}`] = `npm:${alias.name}@${version}`
       queue.push({ name: alias.name, version })
     }
+  }
+
+  const snapshots = new Map<string, Record<string, unknown>>()
+  for (const [key, entry] of Object.entries<any>({ ...lock.packages, ...lock.snapshots })) {
+    const id = key.replace(/^\//, '').replace(/\(.*$/, '')
+    snapshots.set(id, { ...entry?.dependencies, ...entry?.optionalDependencies, ...snapshots.get(id) })
   }
 
   const visited = new Set<string>()
@@ -994,15 +1022,28 @@ async function preserveAliasedDependencies(
       continue
     }
     visited.add(`${name}@${version}`)
-    const manifest = await $fetch<Record<string, any>>(`https://registry.npmjs.org/${name}/${version}`)
-    for (const [dependency, specifier] of Object.entries({ ...manifest.dependencies, ...manifest.optionalDependencies })) {
-      const alias = isOverridden(dependency) && parseAliasSpecifier(dependency, specifier)
-      if (!alias) {
-        continue
+    const aliases: { dependency: string, name: string, version: string }[] = []
+    const snapshot = snapshots.get(`${name}@${version}`)
+    if (snapshot) {
+      for (const [dependency, reference] of Object.entries(snapshot)) {
+        const alias = isOverridden(dependency) && parseLockedAlias(dependency, reference)
+        if (alias) {
+          aliases.push({ dependency, ...alias })
+        }
       }
-      const resolved = await resolveRegistryVersion(alias.name, alias.range)
-      preserved[`${name}@${version}>${dependency}`] = `npm:${alias.name}@${resolved}`
-      queue.push({ name: alias.name, version: resolved })
+    }
+    else {
+      const manifest = await $fetch<Record<string, any>>(`https://registry.npmjs.org/${name}/${version}`)
+      for (const [dependency, specifier] of Object.entries({ ...manifest.peerDependencies, ...manifest.dependencies, ...manifest.optionalDependencies })) {
+        const alias = isOverridden(dependency) && parseAliasSpecifier(dependency, specifier)
+        if (alias) {
+          aliases.push({ dependency, name: alias.name, version: await resolveRegistryVersion(alias.name, alias.range) })
+        }
+      }
+    }
+    for (const alias of aliases) {
+      preserved[`${name}>${alias.dependency}`] ??= `npm:${alias.name}@${alias.version}`
+      queue.push({ name: alias.name, version: alias.version })
     }
   }
 
