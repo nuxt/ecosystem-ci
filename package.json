@@ -5,12 +5,12 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "^24.22.2",
+      "version": "^24.22.3",
       "onFail": "download"
     },
     "packageManager": {
       "name": "pnpm",
-      "version": "12.18.0",
+      "version": "12.21.0",
       "onFail": "download"
     }
   },
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@actions/core": "^3.0.1",
-    "cac": "^7.1.0",
+    "cac": "^7.1.1",
     "execa": "^9.6.1",
     "node-fetch-native": "^1.6.7",
     "ofetch": "^1.5.1",
@@ -49,8 +49,8 @@
     "@antfu/eslint-config": "^5.4.1",
     "@antfu/ni": "^23.3.1",
     "@types/node": "^22.20.5",
-    "@typescript-eslint/eslint-plugin": "^8.72.1",
-    "@typescript-eslint/parser": "^8.72.1",
+    "@typescript-eslint/eslint-plugin": "^8.73.0",
+    "@typescript-eslint/parser": "^8.73.0",
     "eslint": "^9.39.5",
     "eslint-plugin-n": "^17.24.0",
     "lint-staged": "^16.4.0",
