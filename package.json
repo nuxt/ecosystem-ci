@@ -46,7 +46,7 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.4.1",
+    "@antfu/eslint-config": "^10.0.0",
     "@antfu/ni": "^23.3.1",
     "@types/node": "^22.20.5",
     "@typescript-eslint/eslint-plugin": "^8.73.0",
